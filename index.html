@@ -1,0 +1,755 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>レンタル会議室予約システム</title>
+  <meta name="description" content="大・中・小のレンタル会議室を24時間365日予約できる会議室予約サイトです。" />
+  <style>
+    :root {
+      --bg: #f6f8fb;
+      --card: #ffffff;
+      --text: #1e293b;
+      --muted: #64748b;
+      --line: #e2e8f0;
+      --primary: #2563eb;
+      --primary-dark: #1d4ed8;
+      --accent: #f59e0b;
+      --success: #16a34a;
+      --danger: #dc2626;
+      --shadow: 0 18px 45px rgba(15, 23, 42, 0.08);
+      --radius: 22px;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      margin: 0;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.7;
+    }
+
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    .container {
+      width: min(1120px, calc(100% - 32px));
+      margin: 0 auto;
+    }
+
+    header {
+      position: sticky;
+      top: 0;
+      z-index: 20;
+      background: rgba(255, 255, 255, 0.88);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--line);
+    }
+
+    .nav {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 14px 0;
+      gap: 20px;
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-weight: 800;
+      letter-spacing: 0.02em;
+    }
+
+    .logo-mark {
+      display: grid;
+      place-items: center;
+      width: 36px;
+      height: 36px;
+      border-radius: 12px;
+      background: linear-gradient(135deg, var(--primary), #60a5fa);
+      color: white;
+      font-weight: 900;
+    }
+
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 18px;
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .nav-links a:hover {
+      color: var(--primary);
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      border: 0;
+      border-radius: 999px;
+      padding: 11px 18px;
+      background: var(--primary);
+      color: white;
+      font-weight: 700;
+      cursor: pointer;
+      box-shadow: 0 10px 22px rgba(37, 99, 235, 0.22);
+      transition: 0.2s ease;
+    }
+
+    .btn:hover {
+      background: var(--primary-dark);
+      transform: translateY(-1px);
+    }
+
+    .btn.secondary {
+      background: white;
+      color: var(--primary);
+      border: 1px solid var(--line);
+      box-shadow: none;
+    }
+
+    .hero {
+      padding: 80px 0 52px;
+      background:
+        radial-gradient(circle at 18% 15%, rgba(37, 99, 235, 0.13), transparent 30%),
+        radial-gradient(circle at 88% 28%, rgba(245, 158, 11, 0.18), transparent 28%);
+    }
+
+    .hero-grid {
+      display: grid;
+      grid-template-columns: 1.1fr 0.9fr;
+      gap: 40px;
+      align-items: center;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 12px;
+      border-radius: 999px;
+      background: #eff6ff;
+      color: var(--primary-dark);
+      font-weight: 700;
+      font-size: 13px;
+      margin-bottom: 18px;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: clamp(34px, 5vw, 60px);
+      line-height: 1.15;
+      letter-spacing: -0.04em;
+    }
+
+    .lead {
+      margin: 22px 0 30px;
+      color: var(--muted);
+      font-size: 18px;
+      max-width: 680px;
+    }
+
+    .hero-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      align-items: center;
+    }
+
+    .hero-card {
+      background: rgba(255, 255, 255, 0.86);
+      border: 1px solid var(--line);
+      border-radius: 32px;
+      padding: 22px;
+      box-shadow: var(--shadow);
+    }
+
+    .booking-preview {
+      background: white;
+      border: 1px solid var(--line);
+      border-radius: 24px;
+      padding: 20px;
+    }
+
+    .preview-row {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 14px 0;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .preview-row:last-child {
+      border-bottom: 0;
+    }
+
+    .preview-label {
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .preview-value {
+      font-weight: 800;
+      text-align: right;
+    }
+
+    section {
+      padding: 64px 0;
+    }
+
+    .section-title {
+      text-align: center;
+      margin-bottom: 34px;
+    }
+
+    .section-title h2 {
+      margin: 0 0 10px;
+      font-size: clamp(26px, 3vw, 40px);
+      letter-spacing: -0.03em;
+    }
+
+    .section-title p {
+      margin: 0 auto;
+      color: var(--muted);
+      max-width: 700px;
+    }
+
+    .cards {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 18px;
+    }
+
+    .card {
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      padding: 24px;
+      box-shadow: 0 8px 24px rgba(15, 23, 42, 0.04);
+    }
+
+    .room-type {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 10px;
+      margin-bottom: 18px;
+    }
+
+    .room-type h3 {
+      margin: 0;
+      font-size: 24px;
+    }
+
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      padding: 5px 10px;
+      border-radius: 999px;
+      background: #f1f5f9;
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 700;
+      white-space: nowrap;
+    }
+
+    .price {
+      font-size: 38px;
+      font-weight: 900;
+      letter-spacing: -0.04em;
+      margin: 0;
+    }
+
+    .price span {
+      font-size: 15px;
+      color: var(--muted);
+      font-weight: 600;
+    }
+
+    .features {
+      margin: 18px 0 0;
+      padding: 0;
+      list-style: none;
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .features li {
+      display: flex;
+      gap: 8px;
+      margin: 9px 0;
+    }
+
+    .features li::before {
+      content: "✓";
+      color: var(--success);
+      font-weight: 900;
+    }
+
+    .calendar-wrap {
+      display: grid;
+      grid-template-columns: 0.85fr 1.15fr;
+      gap: 24px;
+      align-items: stretch;
+    }
+
+    .form-card {
+      background: white;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      padding: 24px;
+      box-shadow: var(--shadow);
+    }
+
+    .field {
+      margin-bottom: 15px;
+    }
+
+    .field label {
+      display: block;
+      font-size: 13px;
+      color: var(--muted);
+      font-weight: 700;
+      margin-bottom: 6px;
+    }
+
+    .field select,
+    .field input {
+      width: 100%;
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      padding: 12px 14px;
+      font: inherit;
+      color: var(--text);
+      background: #fff;
+    }
+
+    .total {
+      display: flex;
+      justify-content: space-between;
+      gap: 16px;
+      padding: 16px;
+      border-radius: 18px;
+      background: #f8fafc;
+      margin: 18px 0;
+      font-weight: 800;
+    }
+
+    .calendar {
+      background: white;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      padding: 20px;
+      box-shadow: 0 8px 24px rgba(15, 23, 42, 0.04);
+    }
+
+    .calendar-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 14px;
+    }
+
+    .calendar-head h3 {
+      margin: 0;
+    }
+
+    .slots {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 10px;
+    }
+
+    .slot {
+      padding: 12px 8px;
+      border-radius: 14px;
+      background: #ecfdf5;
+      border: 1px solid #bbf7d0;
+      color: #166534;
+      text-align: center;
+      font-size: 13px;
+      font-weight: 800;
+    }
+
+    .slot.booked {
+      background: #fef2f2;
+      border-color: #fecaca;
+      color: #991b1b;
+    }
+
+    .steps {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 16px;
+    }
+
+    .step-num {
+      display: grid;
+      place-items: center;
+      width: 38px;
+      height: 38px;
+      border-radius: 14px;
+      background: #eff6ff;
+      color: var(--primary);
+      font-weight: 900;
+      margin-bottom: 12px;
+    }
+
+    .admin-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+    }
+
+    .admin-item {
+      background: white;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      padding: 22px;
+    }
+
+    .admin-item strong {
+      display: block;
+      margin-bottom: 8px;
+      font-size: 18px;
+    }
+
+    .admin-item p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .notice {
+      background: #fffbeb;
+      border: 1px solid #fde68a;
+      border-radius: var(--radius);
+      padding: 20px;
+      color: #92400e;
+    }
+
+    footer {
+      padding: 36px 0;
+      border-top: 1px solid var(--line);
+      color: var(--muted);
+      text-align: center;
+      font-size: 14px;
+    }
+
+    @media (max-width: 860px) {
+      .hero-grid,
+      .calendar-wrap,
+      .cards,
+      .steps,
+      .admin-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .nav {
+        align-items: flex-start;
+      }
+
+      .nav-links {
+        display: none;
+      }
+
+      .hero {
+        padding-top: 52px;
+      }
+
+      .slots {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="container nav">
+      <a class="logo" href="#top" aria-label="レンタル会議室予約システム トップへ">
+        <span class="logo-mark">会</span>
+        <span>レンタル会議室予約</span>
+      </a>
+      <nav class="nav-links" aria-label="メインメニュー">
+        <a href="#rooms">会議室</a>
+        <a href="#calendar">空き状況</a>
+        <a href="#flow">予約の流れ</a>
+        <a href="#admin">管理者機能</a>
+        <a class="btn" href="#calendar">予約する</a>
+      </nav>
+    </div>
+  </header>
+
+  <main id="top">
+    <section class="hero">
+      <div class="container hero-grid">
+        <div>
+          <div class="badge">24時間365日いつでも予約可能</div>
+          <h1>会議室予約を、もっとシンプルに。</h1>
+          <p class="lead">
+            大・中・小あわせて25室のレンタル会議室を、会員登録後にオンラインで予約できます。
+            空き状況はカレンダーへ即時反映し、管理者は緊急時の予約変更・削除・上書きにも対応できます。
+          </p>
+          <div class="hero-actions">
+            <a class="btn" href="#calendar">空き状況を見る</a>
+            <a class="btn secondary" href="#rooms">料金を見る</a>
+          </div>
+        </div>
+
+        <aside class="hero-card" aria-label="予約内容のプレビュー">
+          <div class="booking-preview">
+            <div class="preview-row">
+              <span class="preview-label">会議室</span>
+              <span class="preview-value">大会議室1</span>
+            </div>
+            <div class="preview-row">
+              <span class="preview-label">利用時間</span>
+              <span class="preview-value">10:00 - 13:00</span>
+            </div>
+            <div class="preview-row">
+              <span class="preview-label">利用料金</span>
+              <span class="preview-value">900円</span>
+            </div>
+            <div class="preview-row">
+              <span class="preview-label">状態</span>
+              <span class="preview-value" style="color: var(--success);">予約可能</span>
+            </div>
+          </div>
+        </aside>
+      </div>
+    </section>
+
+    <section id="rooms">
+      <div class="container">
+        <div class="section-title">
+          <h2>会議室と料金</h2>
+          <p>用途や人数に合わせて、大・中・小の会議室を選べます。料金は1時間単位で計算します。</p>
+        </div>
+
+        <div class="cards">
+          <article class="card">
+            <div class="room-type">
+              <h3>大会議室</h3>
+              <span class="pill">3室</span>
+            </div>
+            <p class="price">300円 <span>/ 1時間</span></p>
+            <ul class="features">
+              <li>大人数の会議やセミナー向け</li>
+              <li>最大24時間まで予約可能</li>
+              <li>空き状況を即時反映予定</li>
+            </ul>
+          </article>
+
+          <article class="card">
+            <div class="room-type">
+              <h3>中会議室</h3>
+              <span class="pill">7室</span>
+            </div>
+            <p class="price">200円 <span>/ 1時間</span></p>
+            <ul class="features">
+              <li>通常会議や打ち合わせ向け</li>
+              <li>コストと広さのバランスが良い</li>
+              <li>会員ログイン後に予約可能</li>
+            </ul>
+          </article>
+
+          <article class="card">
+            <div class="room-type">
+              <h3>小会議室</h3>
+              <span class="pill">15室</span>
+            </div>
+            <p class="price">100円 <span>/ 1時間</span></p>
+            <ul class="features">
+              <li>少人数利用や個人作業向け</li>
+              <li>最も低価格で利用可能</li>
+              <li>24時間365日貸し出し対象</li>
+            </ul>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section id="calendar">
+      <div class="container">
+        <div class="section-title">
+          <h2>予約画面イメージ</h2>
+          <p>この画面はFirebase連携前のデモです。次の工程でログイン・予約DB・リアルタイム反映を追加します。</p>
+        </div>
+
+        <div class="calendar-wrap">
+          <form class="form-card" id="demoForm">
+            <div class="field">
+              <label for="roomType">会議室タイプ</label>
+              <select id="roomType" name="roomType">
+                <option value="large" data-price="300">大会議室：300円/時間</option>
+                <option value="medium" data-price="200">中会議室：200円/時間</option>
+                <option value="small" data-price="100">小会議室：100円/時間</option>
+              </select>
+            </div>
+
+            <div class="field">
+              <label for="hours">利用時間</label>
+              <select id="hours" name="hours">
+                <option value="1">1時間</option>
+                <option value="2">2時間</option>
+                <option value="3" selected>3時間</option>
+                <option value="6">6時間</option>
+                <option value="12">12時間</option>
+                <option value="24">24時間</option>
+              </select>
+            </div>
+
+            <div class="field">
+              <label for="startDate">利用日</label>
+              <input id="startDate" name="startDate" type="date" />
+            </div>
+
+            <div class="field">
+              <label for="startTime">開始時間</label>
+              <input id="startTime" name="startTime" type="time" value="10:00" />
+            </div>
+
+            <div class="total">
+              <span>概算料金</span>
+              <span id="totalAmount">900円</span>
+            </div>
+
+            <button class="btn" type="button" onclick="alert('次工程でFirebase認証・予約登録を実装します。')">
+              予約へ進む
+            </button>
+          </form>
+
+          <div class="calendar" aria-label="空き状況デモ">
+            <div class="calendar-head">
+              <h3>本日の空き状況</h3>
+              <span class="pill">デモ表示</span>
+            </div>
+            <div class="slots">
+              <div class="slot">00:00 空き</div>
+              <div class="slot">01:00 空き</div>
+              <div class="slot booked">02:00 予約済み</div>
+              <div class="slot">03:00 空き</div>
+              <div class="slot">04:00 空き</div>
+              <div class="slot">05:00 空き</div>
+              <div class="slot booked">06:00 予約済み</div>
+              <div class="slot">07:00 空き</div>
+              <div class="slot">08:00 空き</div>
+              <div class="slot booked">09:00 予約済み</div>
+              <div class="slot">10:00 空き</div>
+              <div class="slot">11:00 空き</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="flow">
+      <div class="container">
+        <div class="section-title">
+          <h2>予約の流れ</h2>
+          <p>今後の実装では、会員登録後にログインし、会議室と利用時間を選択して予約します。</p>
+        </div>
+        <div class="steps">
+          <div class="card">
+            <div class="step-num">1</div>
+            <h3>会員登録</h3>
+            <p>メールアドレスとパスワードでユーザー登録します。</p>
+          </div>
+          <div class="card">
+            <div class="step-num">2</div>
+            <h3>空き確認</h3>
+            <p>会議室ごとのカレンダーから空き状況を確認します。</p>
+          </div>
+          <div class="card">
+            <div class="step-num">3</div>
+            <h3>予約登録</h3>
+            <p>会議室・開始時間・利用時間を選択して予約します。</p>
+          </div>
+          <div class="card">
+            <div class="step-num">4</div>
+            <h3>マイページ確認</h3>
+            <p>自分の予約一覧から内容確認・変更・キャンセルを行います。</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="admin">
+      <div class="container">
+        <div class="section-title">
+          <h2>管理者機能の予定</h2>
+          <p>緊急時に備え、管理者だけが全予約の変更・削除・上書きをできるようにします。</p>
+        </div>
+        <div class="admin-grid">
+          <div class="admin-item">
+            <strong>予約の上書き</strong>
+            <p>緊急メンテナンスやトラブル時に、既存予約を上書きできるようにします。</p>
+          </div>
+          <div class="admin-item">
+            <strong>予約変更・削除</strong>
+            <p>ユーザーの予約内容を管理者が代理で変更・削除できます。</p>
+          </div>
+          <div class="admin-item">
+            <strong>操作ログ</strong>
+            <p>誰がいつ予約を変更したかを記録し、トラブル時に確認できるようにします。</p>
+          </div>
+        </div>
+
+        <div class="notice" style="margin-top: 24px;">
+          <strong>開発メモ：</strong>
+          このトップページはGitHub Pages用の静的HTMLです。次の工程でFirebase AuthenticationとCloud Firestoreを接続し、実際の会員登録・予約登録・リアルタイムカレンダー反映を実装します。
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div class="container">
+      <p>© 2026 レンタル会議室予約システム Demo. GitHub Pages + Firebase構成で開発予定。</p>
+    </div>
+  </footer>
+
+  <script>
+    const roomType = document.getElementById('roomType');
+    const hours = document.getElementById('hours');
+    const totalAmount = document.getElementById('totalAmount');
+    const startDate = document.getElementById('startDate');
+
+    function setToday() {
+      const today = new Date();
+      const yyyy = today.getFullYear();
+      const mm = String(today.getMonth() + 1).padStart(2, '0');
+      const dd = String(today.getDate()).padStart(2, '0');
+      startDate.value = `${yyyy}-${mm}-${dd}`;
+      startDate.min = `${yyyy}-${mm}-${dd}`;
+    }
+
+    function calculateTotal() {
+      const selected = roomType.options[roomType.selectedIndex];
+      const price = Number(selected.dataset.price || 0);
+      const usageHours = Number(hours.value || 0);
+      totalAmount.textContent = `${(price * usageHours).toLocaleString('ja-JP')}円`;
+    }
+
+    roomType.addEventListener('change', calculateTotal);
+    hours.addEventListener('change', calculateTotal);
+    setToday();
+    calculateTotal();
+  </script>
+</body>
+</html>
