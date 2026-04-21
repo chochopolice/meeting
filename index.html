@@ -139,7 +139,7 @@
       .hero { padding-top: 52px; }
       .room-list { grid-template-columns: repeat(3, 1fr); }
       .slots { grid-template-columns: repeat(3, 1fr); }
-      .calendar-toolbar, .calendar-summary, .admin-controls, .admin-edit-grid { grid-template-columns: 1fr 1fr; }
+      .calendar-toolbar, .calendar-summary, .admin-controls, .admin-edit-grid, .log-toolbar { grid-template-columns: 1fr 1fr; }
       .hour-row { grid-template-columns: repeat(24, 58px); }
     }
     article:first-child .pill { font-size: 16px; padding: 8px 14px; }
@@ -156,8 +156,17 @@
     .admin-action-row { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 12px; }
     .danger-zone { border: 1px solid #fecaca; background: #fef2f2; border-radius: 18px; padding: 16px; }
     .danger-zone h4 { margin: 0 0 8px; color: #991b1b; }
+
+    .log-toolbar { display: grid; grid-template-columns: 1fr 1fr 1.4fr auto; gap: 12px; align-items: end; margin-bottom: 14px; }
+    .log-toolbar .field { margin: 0; }
+    .log-list { display: grid; gap: 12px; margin-top: 14px; }
+    .log-card { border: 1px solid var(--line); border-radius: 16px; padding: 16px; background: #fff; }
+    .log-card strong { display: block; font-size: 15px; }
+    .log-card small { display: block; color: var(--muted); margin-top: 4px; word-break: break-all; }
+    .log-card pre { white-space: pre-wrap; word-break: break-word; margin: 10px 0 0; padding: 10px; border-radius: 12px; background: #f8fafc; border: 1px solid var(--line); font-size: 12px; color: var(--muted); }
+    .log-meta { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; margin: 8px 0; }
     @media (max-width: 640px) {
-      .room-list, .slots, .inline-grid, .auth-actions, .calendar-toolbar, .calendar-summary, .admin-controls, .admin-edit-grid { grid-template-columns: 1fr; }
+      .room-list, .slots, .inline-grid, .auth-actions, .calendar-toolbar, .calendar-summary, .admin-controls, .admin-edit-grid, .log-toolbar { grid-template-columns: 1fr; }
       .wide-calendar { padding: 18px; }
     }
   </style>
@@ -402,6 +411,33 @@
             <button class="btn danger" id="adminOverwriteReservationBtn" type="button">緊急上書き予約を作成</button>
             <div id="adminOverwriteMessage" class="status-box info">緊急時のみ使用してください。</div>
           </div>
+
+          <div class="history-card">
+            <div class="calendar-head">
+              <div>
+                <h3>操作ログ・履歴</h3>
+                <p style="margin:4px 0 0;color:var(--muted);">管理者が行った変更・キャンセル・上書き・マスタ更新の履歴を確認できます。</p>
+              </div>
+              <button class="btn secondary small" id="reloadAdminLogsBtn" type="button">再読み込み</button>
+            </div>
+            <div class="log-toolbar">
+              <div class="field">
+                <label for="adminLogFilterAction">操作種別</label>
+                <select id="adminLogFilterAction">
+                  <option value="all">すべて</option>
+                  <option value="seed_rooms">会議室マスタ更新</option>
+                  <option value="update">予約変更</option>
+                  <option value="cancel">管理者キャンセル</option>
+                  <option value="overwrite">緊急上書き</option>
+                </select>
+              </div>
+              <div class="field"><label for="adminLogFilterTarget">予約番号</label><input id="adminLogFilterTarget" type="search" placeholder="予約番号で絞り込み" /></div>
+              <div class="field"><label for="adminLogFilterKeyword">キーワード</label><input id="adminLogFilterKeyword" type="search" placeholder="理由・メール・詳細を検索" /></div>
+              <button class="btn secondary small" id="copyAdminLogsBtn" type="button">表示ログをコピー</button>
+            </div>
+            <div id="adminLogsMessage" class="status-box info">管理者ログイン後に操作ログを表示します。</div>
+            <div id="adminLogsList" class="log-list"><div class="empty-state">操作ログはまだ読み込まれていません。</div></div>
+          </div>
         </div>
       </div>
     </section>
@@ -531,6 +567,13 @@
     const adminOverwriteAmount = $('adminOverwriteAmount');
     const adminOverwriteReservationBtn = $('adminOverwriteReservationBtn');
     const adminOverwriteMessage = $('adminOverwriteMessage');
+    const reloadAdminLogsBtn = $('reloadAdminLogsBtn');
+    const adminLogFilterAction = $('adminLogFilterAction');
+    const adminLogFilterTarget = $('adminLogFilterTarget');
+    const adminLogFilterKeyword = $('adminLogFilterKeyword');
+    const copyAdminLogsBtn = $('copyAdminLogsBtn');
+    const adminLogsMessage = $('adminLogsMessage');
+    const adminLogsList = $('adminLogsList');
 
     let currentUser = null;
     let rooms = [];
@@ -542,7 +585,9 @@
     let unsubscribeAvailabilitySlots = null;
     let availabilitySlots = new Map();
     let unsubscribeAdminReservations = null;
+    let unsubscribeAdminLogs = null;
     let adminReservations = [];
+    let adminLogs = [];
     let selectedAdminReservation = null;
 
     const roomDefinitions = [
@@ -823,6 +868,7 @@
         updateAdminVisibility();
         subscribeMyReservations();
         subscribeAdminReservations();
+        subscribeAdminLogs();
       } else {
         guestPanel.style.display = 'block';
         userPanel.style.display = 'none';
@@ -836,10 +882,14 @@
         updateAdminVisibility();
         if (unsubscribeMyReservations) unsubscribeMyReservations();
         if (unsubscribeAdminReservations) unsubscribeAdminReservations();
+        if (unsubscribeAdminLogs) unsubscribeAdminLogs();
         adminReservations = [];
+        adminLogs = [];
         selectedAdminReservation = null;
         myReservationsList.innerHTML = '<div class="empty-state">ログイン後に予約一覧を表示します。</div>';
         adminReservationsList.innerHTML = '<div class="empty-state">管理者ログイン後に予約一覧を表示します。</div>';
+        adminLogsList.innerHTML = '<div class="empty-state">管理者ログイン後に操作ログを表示します。</div>';
+        setBox(adminLogsMessage, '管理者としてログインすると操作ログを表示します。', 'info');
       }
     });
 
@@ -857,6 +907,9 @@
           updatedBy: currentUser.uid
         }, { merge: true })));
         setBox(roomsMessage, '会議室マスタ25件を登録/更新しました。', 'success');
+        if (isCurrentUserAdmin()) {
+          await writeAdminLog('seed_rooms', 'rooms', '会議室マスタ25件を登録/更新', { count: roomDefinitions.length });
+        }
       } catch (error) {
         setBox(roomsMessage, getFirestoreErrorMessage(error), 'error');
       } finally {
@@ -1253,6 +1306,7 @@
         setBox(adminReservationsMessage, '管理者としてログインすると予約一覧を表示します。', 'info');
         setBox(adminEditMessage, '管理者としてログインしてください。', 'info');
         setBox(adminOverwriteMessage, '管理者としてログインしてください。', 'info');
+        setBox(adminLogsMessage, '管理者としてログインすると操作ログを表示します。', 'info');
       }
     }
 
@@ -1355,6 +1409,7 @@
             <small>ユーザー: ${reservation.userEmail || reservation.userId || '-'}</small>
             <div class="admin-action-row">
               <button class="btn secondary small" type="button" data-admin-select="${reservation.id}">この予約を選択</button>
+              <button class="btn secondary small" type="button" data-log-target="${reservation.id}">履歴表示</button>
             </div>
           </div>
         `;
@@ -1388,6 +1443,7 @@
     }
 
     async function writeAdminLog(action, targetReservationId, reason, details = {}) {
+      if (!isCurrentUserAdmin()) return;
       const logId = `log_${crypto.randomUUID()}`;
       await setDoc(doc(db, 'admin_logs', logId), {
         action,
@@ -1396,19 +1452,135 @@
         details,
         adminUserId: currentUser.uid,
         adminEmail: currentUser.email || '',
-        createdAt: serverTimestamp()
+        createdAt: serverTimestamp(),
+        createdAtText: new Date().toISOString()
       });
     }
 
+    function logActionText(action) {
+      return {
+        seed_rooms: '会議室マスタ更新',
+        update: '予約変更',
+        cancel: '管理者キャンセル',
+        overwrite: '緊急上書き'
+      }[action] || action || '-';
+    }
+
+    function formatLogDate(log) {
+      if (log.createdAt?.toDate) return formatDateTimeLocal(log.createdAt.toDate());
+      if (log.createdAtText) return log.createdAtText.replace('T', ' ').slice(0, 16);
+      return '-';
+    }
+
+    function stringifyLogDetails(details) {
+      if (!details || Object.keys(details).length === 0) return '';
+      try {
+        return JSON.stringify(details, null, 2);
+      } catch (_) {
+        return String(details);
+      }
+    }
+
+    function filteredAdminLogs() {
+      const action = adminLogFilterAction.value;
+      const target = adminLogFilterTarget.value.trim().toLowerCase();
+      const keyword = adminLogFilterKeyword.value.trim().toLowerCase();
+      return adminLogs.filter((log) => {
+        if (action !== 'all' && log.action !== action) return false;
+        if (target && !(log.targetReservationId || '').toLowerCase().includes(target)) return false;
+        if (keyword) {
+          const haystack = [
+            log.action,
+            log.targetReservationId,
+            log.reason,
+            log.adminEmail,
+            log.adminUserId,
+            stringifyLogDetails(log.details)
+          ].join(' ').toLowerCase();
+          if (!haystack.includes(keyword)) return false;
+        }
+        return true;
+      });
+    }
+
+    function renderAdminLogs() {
+      if (!isCurrentUserAdmin()) return;
+      const list = filteredAdminLogs();
+      setBox(adminLogsMessage, `操作ログを${list.length}件表示しています。`, 'success');
+      if (!list.length) {
+        adminLogsList.innerHTML = '<div class="empty-state">条件に一致する操作ログはありません。</div>';
+        return;
+      }
+      adminLogsList.innerHTML = list.map((log) => {
+        const detailsText = stringifyLogDetails(log.details);
+        return `
+          <div class="log-card">
+            <strong>${logActionText(log.action)} <span class="pill">${formatLogDate(log)}</span></strong>
+            <div class="log-meta">
+              <span class="pill ${log.action === 'overwrite' || log.action === 'cancel' ? 'warn' : 'success'}">${logActionText(log.action)}</span>
+              <span class="pill">対象: ${log.targetReservationId || '-'}</span>
+            </div>
+            <small>管理者: ${log.adminEmail || log.adminUserId || '-'}</small>
+            <small>理由: ${log.reason || '-'}</small>
+            ${detailsText ? `<pre>${detailsText}</pre>` : ''}
+          </div>
+        `;
+      }).join('');
+    }
+
+    function subscribeAdminLogs() {
+      if (unsubscribeAdminLogs) unsubscribeAdminLogs();
+      unsubscribeAdminLogs = null;
+      adminLogs = [];
+      if (!isCurrentUserAdmin()) {
+        adminLogsList.innerHTML = '<div class="empty-state">管理者ログイン後に操作ログを表示します。</div>';
+        return;
+      }
+      setBox(adminLogsMessage, '操作ログを読み込み中です...', 'info');
+      const logQuery = query(collection(db, 'admin_logs'), orderBy('createdAt', 'desc'));
+      unsubscribeAdminLogs = onSnapshot(logQuery, (snapshot) => {
+        adminLogs = snapshot.docs.map((docSnap) => ({ id: docSnap.id, ...docSnap.data() }));
+        renderAdminLogs();
+      }, (error) => {
+        setBox(adminLogsMessage, getFirestoreErrorMessage(error), 'error');
+      });
+    }
+
+    function getVisibleLogsAsTsv() {
+      const header = ['日時', '操作種別', '対象ID', '理由', '管理者', '詳細'];
+      const rows = filteredAdminLogs().map((log) => [
+        formatLogDate(log),
+        logActionText(log.action),
+        log.targetReservationId || '',
+        log.reason || '',
+        log.adminEmail || log.adminUserId || '',
+        stringifyLogDetails(log.details).replace(/\n/g, ' ')
+      ]);
+      return [header, ...rows].map((row) => row.map((cell) => `"${String(cell).replace(/"/g, '""')}"`).join('\t')).join('\n');
+    }
+
     adminReservationsList.addEventListener('click', (event) => {
-      const button = event.target.closest('[data-admin-select]');
-      if (!button) return;
-      selectAdminReservation(button.dataset.adminSelect);
+      const selectButton = event.target.closest('[data-admin-select]');
+      if (selectButton) {
+        selectAdminReservation(selectButton.dataset.adminSelect);
+        return;
+      }
+      const logButton = event.target.closest('[data-log-target]');
+      if (logButton) {
+        adminLogFilterTarget.value = logButton.dataset.logTarget;
+        renderAdminLogs();
+        location.hash = '#admin';
+      }
     });
 
     [adminFilterDate, adminFilterRoom, adminFilterStatus, adminFilterKeyword].forEach((el) => {
       el.addEventListener('input', renderAdminReservations);
       el.addEventListener('change', renderAdminReservations);
+    });
+
+    [adminLogFilterAction, adminLogFilterTarget, adminLogFilterKeyword].forEach((el) => {
+      el.addEventListener('input', renderAdminLogs);
+      el.addEventListener('change', renderAdminLogs);
     });
 
     [adminEditRoom, adminEditDate, adminEditStartHour, adminEditHours].forEach((el) => {
@@ -1420,6 +1592,16 @@
     });
 
     reloadAdminReservationsBtn.addEventListener('click', subscribeAdminReservations);
+    reloadAdminLogsBtn.addEventListener('click', subscribeAdminLogs);
+    copyAdminLogsBtn.addEventListener('click', async () => {
+      if (!isCurrentUserAdmin()) {
+        setBox(adminLogsMessage, '管理者権限がありません。', 'error');
+        return;
+      }
+      const tsv = getVisibleLogsAsTsv();
+      await navigator.clipboard.writeText(tsv);
+      setBox(adminLogsMessage, '表示中の操作ログをタブ区切り形式でコピーしました。Excelやスプレッドシートに貼り付けできます。', 'success');
+    });
 
     adminUpdateReservationBtn.addEventListener('click', async () => {
       if (!isCurrentUserAdmin()) {
