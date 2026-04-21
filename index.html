@@ -25,42 +25,45 @@
     body { margin: 0; font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; background: var(--bg); color: var(--text); line-height: 1.7; }
     a { color: inherit; text-decoration: none; }
     button, input, select { font: inherit; }
-    .container { width: min(1120px, calc(100% - 32px)); margin: 0 auto; }
-    header { position: sticky; top: 0; z-index: 20; background: rgba(255,255,255,.92); backdrop-filter: blur(12px); border-bottom: 1px solid var(--line); }
+    button { cursor: pointer; }
+    .container { width: min(1180px, calc(100% - 32px)); margin: 0 auto; }
+    header { position: sticky; top: 0; z-index: 20; background: rgba(255,255,255,.94); backdrop-filter: blur(12px); border-bottom: 1px solid var(--line); }
     .nav { display: flex; align-items: center; justify-content: space-between; padding: 14px 0; gap: 20px; }
-    .logo { display: flex; align-items: center; gap: 10px; font-weight: 800; }
+    .logo { display: flex; align-items: center; gap: 10px; font-weight: 900; }
     .logo-mark { display: grid; place-items: center; width: 36px; height: 36px; border-radius: 12px; background: linear-gradient(135deg, var(--primary), #60a5fa); color: #fff; }
     .nav-links { display: flex; align-items: center; gap: 16px; color: var(--muted); font-size: 14px; }
     .nav-links a:hover { color: var(--primary); }
-    .btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; border: 0; border-radius: 999px; padding: 11px 18px; background: var(--primary); color: #fff; font-weight: 700; cursor: pointer; box-shadow: 0 10px 22px rgba(37, 99, 235, .22); transition: .2s; min-height: 44px; }
+    .btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; border: 0; border-radius: 999px; padding: 11px 18px; background: var(--primary); color: #fff; font-weight: 800; box-shadow: 0 10px 22px rgba(37, 99, 235, .22); transition: .2s; min-height: 44px; }
     .btn:hover { background: var(--primary-dark); transform: translateY(-1px); }
     .btn.secondary { background: #fff; color: var(--primary); border: 1px solid var(--line); box-shadow: none; }
     .btn.danger { background: var(--danger); box-shadow: 0 10px 22px rgba(220, 38, 38, .18); }
+    .btn.small { min-height: 36px; padding: 8px 12px; font-size: 13px; }
     .btn:disabled { opacity: .55; cursor: not-allowed; transform: none; }
-    .hero { padding: 72px 0 48px; background: radial-gradient(circle at 18% 15%, rgba(37,99,235,.13), transparent 30%), radial-gradient(circle at 88% 28%, rgba(245,158,11,.18), transparent 28%); }
-    .hero-grid { display: grid; grid-template-columns: 1.1fr .9fr; gap: 40px; align-items: center; }
-    .badge { display: inline-flex; padding: 8px 12px; border-radius: 999px; background: #eff6ff; color: var(--primary-dark); font-weight: 700; font-size: 13px; margin-bottom: 18px; }
+    .hero { padding: 68px 0 44px; background: radial-gradient(circle at 18% 15%, rgba(37,99,235,.13), transparent 30%), radial-gradient(circle at 88% 28%, rgba(245,158,11,.18), transparent 28%); }
+    .hero-grid { display: grid; grid-template-columns: 1.08fr .92fr; gap: 38px; align-items: center; }
+    .badge { display: inline-flex; padding: 8px 12px; border-radius: 999px; background: #eff6ff; color: var(--primary-dark); font-weight: 800; font-size: 13px; margin-bottom: 18px; }
     h1 { margin: 0; font-size: clamp(34px, 5vw, 58px); line-height: 1.15; letter-spacing: -.04em; }
-    .lead { margin: 22px 0 30px; color: var(--muted); font-size: 18px; max-width: 680px; }
+    .lead { margin: 22px 0 30px; color: var(--muted); font-size: 18px; max-width: 720px; }
     .hero-actions { display: flex; flex-wrap: wrap; gap: 12px; }
-    .card, .auth-card, .form-card, .calendar, .master-panel, .admin-item { background: var(--card); border: 1px solid var(--line); border-radius: var(--radius); box-shadow: 0 8px 24px rgba(15,23,42,.04); }
-    .hero-card { background: rgba(255,255,255,.86); border: 1px solid var(--line); border-radius: 32px; padding: 22px; box-shadow: var(--shadow); }
+    .card, .auth-card, .form-card, .calendar, .master-panel, .admin-item, .history-card { background: var(--card); border: 1px solid var(--line); border-radius: var(--radius); box-shadow: 0 8px 24px rgba(15,23,42,.04); }
+    .hero-card { background: rgba(255,255,255,.88); border: 1px solid var(--line); border-radius: 32px; padding: 22px; box-shadow: var(--shadow); }
     .booking-preview { background: #fff; border: 1px solid var(--line); border-radius: 24px; padding: 20px; }
     .preview-row { display: flex; justify-content: space-between; gap: 12px; padding: 14px 0; border-bottom: 1px solid var(--line); }
     .preview-row:last-child { border-bottom: 0; }
     .preview-label { color: var(--muted); font-size: 14px; }
-    .preview-value { font-weight: 800; text-align: right; }
-    section { padding: 58px 0; }
+    .preview-value { font-weight: 900; text-align: right; }
+    section { padding: 56px 0; }
     .section-title { text-align: center; margin-bottom: 30px; }
     .section-title h2 { margin: 0 0 10px; font-size: clamp(26px, 3vw, 38px); letter-spacing: -.03em; }
-    .section-title p { margin: 0 auto; color: var(--muted); max-width: 760px; }
+    .section-title p { margin: 0 auto; color: var(--muted); max-width: 800px; }
     .auth-grid, .calendar-wrap { display: grid; grid-template-columns: .95fr 1.05fr; gap: 22px; align-items: stretch; }
     .cards, .admin-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; }
-    .card, .auth-card, .form-card, .calendar, .master-panel, .admin-item { padding: 24px; }
+    .card, .auth-card, .form-card, .calendar, .master-panel, .admin-item, .history-card { padding: 24px; }
     .room-type { display: flex; justify-content: space-between; align-items: center; gap: 12px; }
     .room-type h3 { margin: 0; font-size: 24px; }
-    .pill { display: inline-flex; align-items: center; padding: 5px 10px; border-radius: 999px; background: #f1f5f9; color: var(--muted); font-size: 12px; font-weight: 700; white-space: nowrap; }
+    .pill { display: inline-flex; align-items: center; padding: 5px 10px; border-radius: 999px; background: #f1f5f9; color: var(--muted); font-size: 12px; font-weight: 800; white-space: nowrap; }
     .pill.warn { background: #fffbeb; color: #92400e; }
+    .pill.success { background: #ecfdf5; color: #166534; }
     .price { font-size: 38px; font-weight: 900; letter-spacing: -.04em; margin: 0; }
     .price span { font-size: 15px; color: var(--muted); font-weight: 600; }
     .features { margin: 18px 0 0; padding: 0; list-style: none; color: var(--muted); font-size: 14px; }
@@ -70,6 +73,7 @@
     label { display: block; font-weight: 800; margin-bottom: 7px; }
     input, select { width: 100%; border: 1px solid var(--line); border-radius: 14px; padding: 12px 14px; background: #fff; color: var(--text); }
     input:focus, select:focus { outline: 3px solid rgba(37, 99, 235, .16); border-color: var(--primary); }
+    .inline-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
     .auth-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 12px; }
     .status-box { border: 1px solid var(--line); border-radius: 18px; padding: 16px; background: #f8fafc; margin-top: 16px; font-size: 14px; }
     .status-box.success { background: #ecfdf5; border-color: #bbf7d0; color: #166534; }
@@ -82,30 +86,38 @@
     .uid-box { margin-top: 16px; padding: 14px; border-radius: 16px; background: #f8fafc; border: 1px dashed #cbd5e1; }
     .uid-box strong { display: block; margin-bottom: 8px; }
     .mini-actions { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 10px; }
-    .mini-btn { border: 1px solid var(--line); border-radius: 999px; background: #fff; color: var(--primary); padding: 8px 12px; font-weight: 700; cursor: pointer; }
-    .total { display: flex; justify-content: space-between; align-items: center; margin: 18px 0; padding: 16px; border-radius: 18px; background: #f8fafc; font-weight: 800; }
+    .mini-btn { border: 1px solid var(--line); border-radius: 999px; background: #fff; color: var(--primary); padding: 8px 12px; font-weight: 800; cursor: pointer; }
+    .total { display: flex; justify-content: space-between; align-items: center; margin: 18px 0; padding: 16px; border-radius: 18px; background: #f8fafc; font-weight: 900; }
     .total span:last-child { font-size: 24px; color: var(--primary-dark); }
     .calendar-head, .master-head { display: flex; justify-content: space-between; align-items: center; gap: 12px; margin-bottom: 16px; flex-wrap: wrap; }
     .calendar-head h3, .master-head h3 { margin: 0; font-size: 22px; }
     .master-head p { color: var(--muted); margin: 4px 0 0; }
-    .room-list { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-top: 16px; }
+    .room-list { display: grid; grid-template-columns: repeat(5, 1fr); gap: 12px; margin-top: 16px; }
     .room-master-card { border: 1px solid var(--line); border-radius: 16px; padding: 14px; background: #fff; }
     .room-master-card strong { display: block; }
     .room-master-card span { display: block; color: var(--muted); font-size: 13px; }
-    .empty-state { grid-column: 1 / -1; padding: 20px; border-radius: 16px; background: #f8fafc; color: var(--muted); text-align: center; }
-    .slots { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
-    .slot { padding: 12px; border-radius: 14px; text-align: center; background: #ecfdf5; color: #166534; font-weight: 800; font-size: 14px; }
-    .slot.booked { background: #fef2f2; color: #991b1b; }
+    .empty-state { grid-column: 1 / -1; padding: 20px; border-radius: 16px; background: #f8fafc; color: var(--muted); text-align: center; border: 1px dashed #cbd5e1; }
+    .slots { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
+    .slot { padding: 10px 8px; border-radius: 14px; text-align: center; background: #ecfdf5; color: #166534; border: 1px solid #bbf7d0; font-weight: 900; font-size: 13px; }
+    .slot.booked { background: #fef2f2; border-color: #fecaca; color: #991b1b; }
+    .slot.selected { outline: 3px solid rgba(37, 99, 235, .24); }
+    .reservation-list { display: grid; gap: 12px; margin-top: 16px; }
+    .reservation-item { padding: 16px; border: 1px solid var(--line); border-radius: 16px; background: #fff; }
+    .reservation-item strong { display: block; font-size: 16px; }
+    .reservation-item small { display: block; color: var(--muted); margin-top: 4px; }
+    .reservation-item .row { display: flex; justify-content: space-between; gap: 12px; align-items: center; margin-top: 10px; flex-wrap: wrap; }
     .notice { background: #fffbeb; border: 1px solid #fde68a; border-radius: var(--radius); padding: 20px; color: #92400e; }
     footer { padding: 36px 0; border-top: 1px solid var(--line); color: var(--muted); text-align: center; font-size: 14px; }
-    @media (max-width: 900px) {
+    @media (max-width: 980px) {
       .hero-grid, .auth-grid, .calendar-wrap, .cards, .admin-grid { grid-template-columns: 1fr; }
       .nav-links { display: none; }
       .hero { padding-top: 52px; }
-      .slots, .room-list { grid-template-columns: repeat(2, 1fr); }
-      .auth-actions { grid-template-columns: 1fr; }
+      .room-list { grid-template-columns: repeat(3, 1fr); }
+      .slots { grid-template-columns: repeat(3, 1fr); }
     }
-    @media (max-width: 560px) { .slots, .room-list { grid-template-columns: 1fr; } }
+    @media (max-width: 640px) {
+      .room-list, .slots, .inline-grid, .auth-actions { grid-template-columns: 1fr; }
+    }
   </style>
 </head>
 <body>
@@ -115,8 +127,8 @@
       <nav class="nav-links" aria-label="メインメニュー">
         <a href="#auth">ログイン</a>
         <a href="#rooms">会議室</a>
-        <a href="#calendar">空き状況</a>
-        <a href="#admin">管理者機能</a>
+        <a href="#calendar">予約</a>
+        <a href="#myreservations">予約履歴</a>
         <a class="btn" href="#calendar">予約する</a>
       </nav>
     </div>
@@ -128,17 +140,17 @@
         <div>
           <div class="badge">24時間365日いつでも予約可能</div>
           <h1>会議室予約を、もっとシンプルに。</h1>
-          <p class="lead">大・中・小あわせて25室のレンタル会議室を、会員登録後にオンラインで予約できます。現在はFirebase AuthenticationとFirestore会議室マスタ登録まで対応しています。</p>
+          <p class="lead">大・中・小あわせて25室のレンタル会議室を、会員登録後にオンラインで予約できます。Firestoreのroom_slotsで時間枠をロックし、二重予約を防ぎます。</p>
           <div class="hero-actions">
             <a class="btn" href="#auth">会員登録・ログイン</a>
-            <a class="btn secondary" href="#rooms">料金を見る</a>
+            <a class="btn secondary" href="#calendar">予約する</a>
           </div>
         </div>
         <aside class="hero-card">
           <div class="booking-preview">
-            <div class="preview-row"><span class="preview-label">会議室</span><span class="preview-value">大会議室1</span></div>
-            <div class="preview-row"><span class="preview-label">利用時間</span><span class="preview-value">10:00 - 13:00</span></div>
-            <div class="preview-row"><span class="preview-label">利用料金</span><span class="preview-value">900円</span></div>
+            <div class="preview-row"><span class="preview-label">会議室</span><span class="preview-value" id="heroRoomName">未選択</span></div>
+            <div class="preview-row"><span class="preview-label">利用時間</span><span class="preview-value" id="heroTimeRange">-</span></div>
+            <div class="preview-row"><span class="preview-label">利用料金</span><span class="preview-value" id="heroAmount">-</span></div>
             <div class="preview-row"><span class="preview-label">ログイン状態</span><span class="preview-value" id="heroLoginStatus" style="color: var(--warning);">未ログイン</span></div>
           </div>
         </aside>
@@ -149,7 +161,7 @@
       <div class="container">
         <div class="section-title">
           <h2>会員登録・ログイン</h2>
-          <p>メールアドレスとパスワードで会員登録・ログインできます。ログイン後、管理者設定用UIDが表示されます。</p>
+          <p>メールアドレスとパスワードで会員登録・ログインできます。ログイン後、予約登録が可能になります。</p>
         </div>
         <div class="auth-grid">
           <div class="auth-card">
@@ -166,7 +178,7 @@
           <div class="auth-card">
             <h3>ログイン状態</h3>
             <p>ログインに成功すると、ここにユーザー情報と管理者設定に使うUIDが表示されます。</p>
-            <div class="status-box" id="guestPanel">現在は未ログインです。予約機能はログイン後に利用できる設計にします。</div>
+            <div class="status-box" id="guestPanel">現在は未ログインです。予約するにはログインしてください。</div>
             <div class="user-panel" id="userPanel">
               <div>
                 <strong>ログイン中</strong>
@@ -193,16 +205,16 @@
       <div class="container">
         <div class="section-title"><h2>会議室と料金</h2><p>用途や人数に合わせて、大・中・小の会議室を選べます。料金は1時間単位で計算します。</p></div>
         <div class="cards">
-          <article class="card"><div class="room-type"><h3>大会議室</h3><span class="pill">3室</span></div><p class="price">300円 <span>/ 1時間</span></p><ul class="features"><li>大人数の会議やセミナー向け</li><li>最大24時間まで予約可能</li><li>Firestoreのroomsコレクションに登録</li></ul></article>
-          <article class="card"><div class="room-type"><h3>中会議室</h3><span class="pill">7室</span></div><p class="price">200円 <span>/ 1時間</span></p><ul class="features"><li>通常会議や打ち合わせ向け</li><li>コストと広さのバランスが良い</li><li>Firestoreのroomsコレクションに登録</li></ul></article>
+          <article class="card"><div class="room-type"><h3>大会議室</h3><span class="pill">3室</span></div><p class="price">300円 <span>/ 1時間</span></p><ul class="features"><li>大人数の会議やセミナー向け</li><li>最大24時間まで予約可能</li><li>room_slotsで時間枠をロック</li></ul></article>
+          <article class="card"><div class="room-type"><h3>中会議室</h3><span class="pill">7室</span></div><p class="price">200円 <span>/ 1時間</span></p><ul class="features"><li>通常会議や打ち合わせ向け</li><li>コストと広さのバランスが良い</li><li>room_slotsで時間枠をロック</li></ul></article>
           <article class="card"><div class="room-type"><h3>小会議室</h3><span class="pill">15室</span></div><p class="price">100円 <span>/ 1時間</span></p><ul class="features"><li>少人数利用や個人作業向け</li><li>最も低価格で利用可能</li><li>24時間365日貸し出し対象</li></ul></article>
         </div>
-        <div class="master-panel" style="margin-top: 22px;">
+        <div class="master-panel">
           <div class="master-head">
             <div><h3>Firestore会議室マスタ</h3><p>Firestoreの <strong>rooms</strong> コレクションから会議室一覧を読み込みます。</p></div>
             <button class="btn" id="seedRoomsBtn" type="button">会議室マスタを登録/更新</button>
           </div>
-          <div id="roomsMessage" class="status-box info">Firestore接続待ちです。ログイン後、管理者UIDをSecurity Rulesに設定してから登録してください。</div>
+          <div id="roomsMessage" class="status-box info">会議室マスタを読み込み中です。</div>
           <div id="roomList" class="room-list"><div class="empty-state">会議室マスタを読み込み中です。</div></div>
         </div>
       </div>
@@ -210,43 +222,90 @@
 
     <section id="calendar">
       <div class="container">
-        <div class="section-title"><h2>予約画面イメージ</h2><p>ログイン状態に応じて予約ボタンの表示が変わります。予約DB登録は次の工程で追加します。</p></div>
+        <div class="section-title"><h2>予約登録</h2><p>会議室・利用日・開始時間・利用時間を選択して予約できます。最大24時間まで対応しています。</p></div>
         <div class="calendar-wrap">
-          <form class="form-card" id="demoForm">
-            <div class="field"><label for="roomType">会議室タイプ</label><select id="roomType"><option value="large" data-price="300">大会議室：300円/時間</option><option value="medium" data-price="200">中会議室：200円/時間</option><option value="small" data-price="100">小会議室：100円/時間</option></select></div>
-            <div class="field"><label for="hours">利用時間</label><select id="hours"><option value="1">1時間</option><option value="2">2時間</option><option value="3" selected>3時間</option><option value="6">6時間</option><option value="12">12時間</option><option value="24">24時間</option></select></div>
-            <div class="field"><label for="startDate">利用日</label><input id="startDate" type="date" /></div>
-            <div class="field"><label for="startTime">開始時間</label><input id="startTime" type="time" value="10:00" /></div>
-            <div class="total"><span>概算料金</span><span id="totalAmount">900円</span></div>
-            <button class="btn" id="reserveDemoBtn" type="button">ログイン後に予約へ進む</button>
+          <form class="form-card" id="reservationForm">
+            <div class="field"><label for="reservationRoom">会議室</label><select id="reservationRoom"><option value="">会議室マスタを読み込み中...</option></select></div>
+            <div class="inline-grid">
+              <div class="field"><label for="reservationDate">利用開始日</label><input id="reservationDate" type="date" /></div>
+              <div class="field"><label for="reservationStartHour">開始時間</label><select id="reservationStartHour"></select></div>
+            </div>
+            <div class="field"><label for="reservationHours">利用時間</label><select id="reservationHours"></select></div>
+            <div class="total"><span>利用料金</span><span id="reservationAmount">0円</span></div>
+            <div class="status-box info" id="reservationPreview">会議室と時間を選択してください。</div>
+            <button class="btn" id="createReservationBtn" type="submit">予約する</button>
+            <div id="reservationMessage" class="status-box info">ログイン後、予約登録できます。</div>
           </form>
+
           <div class="calendar">
-            <div class="calendar-head"><h3>本日の空き状況</h3><span class="pill warn">デモ表示</span></div>
-            <div class="slots"><div class="slot">00:00 空き</div><div class="slot">01:00 空き</div><div class="slot booked">02:00 予約済み</div><div class="slot">03:00 空き</div><div class="slot">04:00 空き</div><div class="slot">05:00 空き</div><div class="slot booked">06:00 予約済み</div><div class="slot">07:00 空き</div><div class="slot">08:00 空き</div><div class="slot booked">09:00 予約済み</div><div class="slot">10:00 空き</div><div class="slot">11:00 空き</div></div>
+            <div class="calendar-head">
+              <div>
+                <h3>選択日の空き状況</h3>
+                <span class="pill" id="calendarRoomLabel">会議室未選択</span>
+              </div>
+              <button class="btn secondary small" id="reloadSlotsBtn" type="button">再読み込み</button>
+            </div>
+            <div class="slots" id="slotGrid"><div class="empty-state">会議室と日付を選ぶと、24時間分の空き状況を表示します。</div></div>
           </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="myreservations">
+      <div class="container">
+        <div class="section-title"><h2>自分の予約</h2><p>ログイン中ユーザーの予約を表示します。キャンセルすると、該当時間枠のロックも解除されます。</p></div>
+        <div class="history-card">
+          <div class="calendar-head">
+            <h3>予約一覧</h3>
+            <button class="btn secondary small" id="reloadMyReservationsBtn" type="button">再読み込み</button>
+          </div>
+          <div id="myReservationsMessage" class="status-box info">ログイン後に予約一覧を表示します。</div>
+          <div id="myReservationsList" class="reservation-list"><div class="empty-state">予約はまだありません。</div></div>
         </div>
       </div>
     </section>
 
     <section id="admin">
       <div class="container">
-        <div class="section-title"><h2>管理者機能</h2><p>緊急時に予約変更・削除・上書きできる管理者画面を今後追加します。</p></div>
+        <div class="section-title"><h2>管理者機能予定</h2><p>次工程以降で、管理者による予約の変更・削除・緊急上書き・操作ログを追加します。</p></div>
         <div class="admin-grid">
-          <div class="admin-item"><strong>予約上書き</strong><p>緊急メンテナンスなどで既存予約を上書きできます。</p></div>
-          <div class="admin-item"><strong>ユーザー予約変更</strong><p>管理者が全ユーザーの予約を変更できます。</p></div>
-          <div class="admin-item"><strong>操作ログ</strong><p>誰がいつ予約を変更したかを記録します。</p></div>
+          <article class="admin-item"><h3>予約上書き</h3><p>緊急メンテナンスやトラブル時に、管理者が既存予約を上書きできるようにします。</p></article>
+          <article class="admin-item"><h3>予約変更・削除</h3><p>利用者からの問い合わせに応じて、管理者が予約情報を変更・削除できるようにします。</p></article>
+          <article class="admin-item"><h3>操作ログ</h3><p>上書き・変更・削除の履歴を残し、後から確認できるようにします。</p></article>
         </div>
-        <div class="notice" style="margin-top:24px;"><strong>開発メモ：</strong>UIDが表示されたら、そのUIDをFirestore Rulesの <code>YOUR_ADMIN_UID</code> に設定してください。</div>
       </div>
     </section>
   </main>
 
-  <footer><div class="container"><p>© 2026 レンタル会議室予約システム Demo. GitHub Pages + Firebase構成で開発中。</p></div></footer>
+  <footer>
+    <div class="container">© Rental Meeting Room Reservation System / GitHub Pages + Firebase</div>
+  </footer>
 
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/12.12.0/firebase-app.js";
-    import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.12.0/firebase-auth.js";
-    import { getFirestore, collection, doc, writeBatch, serverTimestamp, onSnapshot, query, orderBy } from "https://www.gstatic.com/firebasejs/12.12.0/firebase-firestore.js";
+    import {
+      getAuth,
+      createUserWithEmailAndPassword,
+      signInWithEmailAndPassword,
+      signOut,
+      onAuthStateChanged
+    } from "https://www.gstatic.com/firebasejs/12.12.0/firebase-auth.js";
+    import {
+      getFirestore,
+      collection,
+      doc,
+      setDoc,
+      getDoc,
+      getDocs,
+      updateDoc,
+      serverTimestamp,
+      onSnapshot,
+      query,
+      where,
+      orderBy,
+      runTransaction,
+      Timestamp
+    } from "https://www.gstatic.com/firebasejs/12.12.0/firebase-firestore.js";
 
     const firebaseConfig = {
       apiKey: "AIzaSyAGXOWh2K64S1VB1ZebWxyw3c0J3lNObqo",
@@ -263,10 +322,7 @@
     const db = getFirestore(app);
 
     const $ = (id) => document.getElementById(id);
-    const roomType = $('roomType');
-    const hours = $('hours');
-    const totalAmount = $('totalAmount');
-    const startDate = $('startDate');
+
     const authEmail = $('authEmail');
     const authPassword = $('authPassword');
     const registerBtn = $('registerBtn');
@@ -282,22 +338,163 @@
     const refreshAuthBtn = $('refreshAuthBtn');
     const debugMessage = $('debugMessage');
     const heroLoginStatus = $('heroLoginStatus');
-    const reserveDemoBtn = $('reserveDemoBtn');
+
     const seedRoomsBtn = $('seedRoomsBtn');
     const roomsMessage = $('roomsMessage');
     const roomList = $('roomList');
+    const reservationRoom = $('reservationRoom');
+    const reservationDate = $('reservationDate');
+    const reservationStartHour = $('reservationStartHour');
+    const reservationHours = $('reservationHours');
+    const reservationAmount = $('reservationAmount');
+    const reservationPreview = $('reservationPreview');
+    const reservationForm = $('reservationForm');
+    const createReservationBtn = $('createReservationBtn');
+    const reservationMessage = $('reservationMessage');
+    const slotGrid = $('slotGrid');
+    const calendarRoomLabel = $('calendarRoomLabel');
+    const reloadSlotsBtn = $('reloadSlotsBtn');
+    const myReservationsMessage = $('myReservationsMessage');
+    const myReservationsList = $('myReservationsList');
+    const reloadMyReservationsBtn = $('reloadMyReservationsBtn');
+    const heroRoomName = $('heroRoomName');
+    const heroTimeRange = $('heroTimeRange');
+    const heroAmount = $('heroAmount');
 
     let currentUser = null;
+    let rooms = [];
+    let roomMap = new Map();
+    let unsubscribeRooms = null;
+    let unsubscribeSlots = null;
+    let unsubscribeMyReservations = null;
+    let currentDaySlots = new Map();
 
-    const roomMasters = [
+    const roomDefinitions = [
       ...Array.from({ length: 3 }, (_, i) => ({ id: `large-${String(i + 1).padStart(2, '0')}`, name: `大会議室${i + 1}`, type: 'large', typeLabel: '大', pricePerHour: 300, sortOrder: 100 + i + 1, active: true })),
       ...Array.from({ length: 7 }, (_, i) => ({ id: `medium-${String(i + 1).padStart(2, '0')}`, name: `中会議室${i + 1}`, type: 'medium', typeLabel: '中', pricePerHour: 200, sortOrder: 200 + i + 1, active: true })),
       ...Array.from({ length: 15 }, (_, i) => ({ id: `small-${String(i + 1).padStart(2, '0')}`, name: `小会議室${i + 1}`, type: 'small', typeLabel: '小', pricePerHour: 100, sortOrder: 300 + i + 1, active: true }))
     ];
 
-    function setBox(element, message, type = 'info') {
-      element.textContent = message;
-      element.className = `status-box ${type}`;
+    function setBox(el, message, type = 'info') {
+      el.textContent = message;
+      el.className = `status-box ${type}`;
+    }
+
+    function yen(value) {
+      return `${Number(value || 0).toLocaleString('ja-JP')}円`;
+    }
+
+    function pad2(n) {
+      return String(n).padStart(2, '0');
+    }
+
+    function formatDateLocal(date) {
+      const y = date.getFullYear();
+      const m = pad2(date.getMonth() + 1);
+      const d = pad2(date.getDate());
+      return `${y}-${m}-${d}`;
+    }
+
+    function formatDateTimeLocal(date) {
+      return `${formatDateLocal(date)} ${pad2(date.getHours())}:00`;
+    }
+
+    function createLocalDate(dateString, hour) {
+      return new Date(`${dateString}T${pad2(hour)}:00:00`);
+    }
+
+    function addHours(date, hours) {
+      return new Date(date.getTime() + Number(hours) * 60 * 60 * 1000);
+    }
+
+    function getTodayString() {
+      return formatDateLocal(new Date());
+    }
+
+    function buildSlotId(roomId, dateString, hour) {
+      return `${roomId}_${dateString}_${pad2(hour)}`;
+    }
+
+    function buildSlotGroup(roomId, dateString) {
+      return `${roomId}_${dateString}`;
+    }
+
+    function getSelectedRoom() {
+      return roomMap.get(reservationRoom.value) || null;
+    }
+
+    function setDefaultInputs() {
+      const today = getTodayString();
+      reservationDate.value = today;
+      reservationDate.min = today;
+
+      reservationStartHour.innerHTML = '';
+      for (let h = 0; h <= 23; h += 1) {
+        const option = document.createElement('option');
+        option.value = String(h);
+        option.textContent = `${pad2(h)}:00`;
+        if (h === 10) option.selected = true;
+        reservationStartHour.appendChild(option);
+      }
+      buildHoursOptions();
+    }
+
+    function buildHoursOptions() {
+      const current = Number(reservationHours.value || 1);
+      reservationHours.innerHTML = '';
+      for (let h = 1; h <= 24; h += 1) {
+        const option = document.createElement('option');
+        option.value = String(h);
+        option.textContent = `${h}時間`;
+        if (h === Math.min(current || 1, 24)) option.selected = true;
+        reservationHours.appendChild(option);
+      }
+      if (!reservationHours.value) reservationHours.value = '1';
+    }
+
+    function getReservationDraft() {
+      const room = getSelectedRoom();
+      const date = reservationDate.value;
+      const startHour = Number(reservationStartHour.value);
+      const hours = Number(reservationHours.value);
+      if (!room || !date || Number.isNaN(startHour) || Number.isNaN(hours)) return null;
+      const startDate = createLocalDate(date, startHour);
+      const endDate = addHours(startDate, hours);
+      const amount = room.pricePerHour * hours;
+      const slots = [];
+      for (let i = 0; i < hours; i += 1) {
+        const slotDateObj = addHours(startDate, i);
+        const slotDate = formatDateLocal(slotDateObj);
+        const slotHour = slotDateObj.getHours();
+        slots.push({
+          id: buildSlotId(room.id, slotDate, slotHour),
+          slotGroup: buildSlotGroup(room.id, slotDate),
+          roomId: room.id,
+          date: slotDate,
+          hour: slotHour
+        });
+      }
+      return { room, date, startHour, hours, startDate, endDate, amount, slots };
+    }
+
+    function updateReservationPreview() {
+      const draft = getReservationDraft();
+      if (!draft) {
+        reservationAmount.textContent = yen(0);
+        reservationPreview.textContent = '会議室と時間を選択してください。';
+        heroRoomName.textContent = '未選択';
+        heroTimeRange.textContent = '-';
+        heroAmount.textContent = '-';
+        return;
+      }
+      reservationAmount.textContent = yen(draft.amount);
+      const timeText = `${formatDateTimeLocal(draft.startDate)} 〜 ${formatDateTimeLocal(draft.endDate)}`;
+      reservationPreview.textContent = `${draft.room.name}を${draft.hours}時間予約します。利用時間：${timeText}`;
+      heroRoomName.textContent = draft.room.name;
+      heroTimeRange.textContent = `${pad2(draft.startDate.getHours())}:00 - ${pad2(draft.endDate.getHours())}:00`;
+      heroAmount.textContent = yen(draft.amount);
+      renderSlotGrid();
+      subscribeSlotsForSelectedDay();
     }
 
     function getAuthErrorMessage(error) {
@@ -313,22 +510,87 @@
         'auth/wrong-password': 'パスワードが正しくありません。',
         'auth/too-many-requests': 'ログイン試行が多すぎます。少し時間をおいて再度お試しください。',
         'auth/operation-not-allowed': 'Firebase Consoleでメール/パスワード認証が有効になっていません。',
-        'auth/unauthorized-domain': 'このドメインがFirebase Authenticationの承認済みドメインに登録されていません。Firebase AuthenticationのAuthorized domainsにGitHub Pagesのドメインを追加してください。'
+        'auth/unauthorized-domain': 'このドメインがFirebase Authenticationの承認済みドメインに登録されていません。'
       };
-      return messages[code] || `認証エラー：${error?.message || code}`;
+      return messages[code] || `エラーが発生しました：${error.message || code}`;
     }
 
     function getFirestoreErrorMessage(error) {
       const code = error?.code || '';
       const messages = {
-        'permission-denied': 'Firestore Security Rulesで権限が拒否されました。管理者UIDの設定を確認してください。UID表示だけならこのエラーは無視して大丈夫です。',
-        'unavailable': 'Firestoreに接続できませんでした。ネットワーク状態を確認してください。',
-        'failed-precondition': 'Firestoreの設定またはインデックスが不足しています。Firebase Consoleを確認してください。'
+        'permission-denied': '権限がありません。Firestore Rulesの管理者UID、またはログイン状態を確認してください。',
+        'unavailable': 'Firestoreに接続できません。通信状態を確認してください。',
+        'failed-precondition': 'Firestoreの設定またはインデックスが不足している可能性があります。',
+        'already-exists': 'すでに同じデータが存在します。'
       };
-      return messages[code] || `Firestoreエラー：${error?.message || code}`;
+      return messages[code] || `Firestoreエラー：${error.message || code}`;
     }
 
-    function updateUserDisplay(user) {
+    function setAuthLoading(isLoading) {
+      registerBtn.disabled = isLoading;
+      loginBtn.disabled = isLoading;
+      logoutBtn.disabled = isLoading;
+    }
+
+    registerBtn.addEventListener('click', async () => {
+      try {
+        setAuthLoading(true);
+        const email = authEmail.value.trim();
+        const password = authPassword.value;
+        await createUserWithEmailAndPassword(auth, email, password);
+        setBox(authMessage, '会員登録が完了しました。ログイン状態になっています。', 'success');
+      } catch (error) {
+        setBox(authMessage, getAuthErrorMessage(error), 'error');
+      } finally {
+        setAuthLoading(false);
+      }
+    });
+
+    loginBtn.addEventListener('click', async () => {
+      try {
+        setAuthLoading(true);
+        const email = authEmail.value.trim();
+        const password = authPassword.value;
+        await signInWithEmailAndPassword(auth, email, password);
+        setBox(authMessage, 'ログインしました。', 'success');
+      } catch (error) {
+        setBox(authMessage, getAuthErrorMessage(error), 'error');
+      } finally {
+        setAuthLoading(false);
+      }
+    });
+
+    logoutBtn.addEventListener('click', async () => {
+      try {
+        setAuthLoading(true);
+        await signOut(auth);
+        setBox(authMessage, 'ログアウトしました。', 'info');
+      } catch (error) {
+        setBox(authMessage, getAuthErrorMessage(error), 'error');
+      } finally {
+        setAuthLoading(false);
+      }
+    });
+
+    copyUidBtn.addEventListener('click', async () => {
+      if (!currentUser) {
+        setBox(debugMessage, '未ログインのためUIDをコピーできません。', 'error');
+        return;
+      }
+      await navigator.clipboard.writeText(currentUser.uid);
+      setBox(debugMessage, 'UIDをコピーしました。', 'success');
+    });
+
+    refreshAuthBtn.addEventListener('click', () => {
+      const user = auth.currentUser;
+      if (user) {
+        setBox(debugMessage, `ログイン状態を確認しました。UID: ${user.uid}`, 'success');
+      } else {
+        setBox(debugMessage, '現在は未ログインです。', 'info');
+      }
+    });
+
+    onAuthStateChanged(auth, (user) => {
       currentUser = user;
       if (user) {
         guestPanel.style.display = 'none';
@@ -338,8 +600,9 @@
         adminUidText.textContent = user.uid;
         heroLoginStatus.textContent = 'ログイン中';
         heroLoginStatus.style.color = 'var(--success)';
-        reserveDemoBtn.textContent = '予約へ進む：次工程でDB登録を実装';
-        setBox(debugMessage, 'ログイン確認OK：UIDを取得しました。', 'success');
+        setBox(debugMessage, '認証状態：ログイン中です。', 'success');
+        setBox(reservationMessage, '予約登録できます。会議室と時間を選択してください。', 'info');
+        subscribeMyReservations();
       } else {
         guestPanel.style.display = 'block';
         userPanel.style.display = 'none';
@@ -348,167 +611,275 @@
         adminUidText.textContent = '未ログインのため未取得です';
         heroLoginStatus.textContent = '未ログイン';
         heroLoginStatus.style.color = 'var(--warning)';
-        reserveDemoBtn.textContent = 'ログイン後に予約へ進む';
-        setBox(debugMessage, '未ログインです。会員登録またはログインを行うとUIDが表示されます。', 'info');
+        setBox(debugMessage, '認証状態：未ログインです。', 'info');
+        setBox(reservationMessage, '予約するには、先に会員登録またはログインしてください。', 'info');
+        if (unsubscribeMyReservations) unsubscribeMyReservations();
+        myReservationsList.innerHTML = '<div class="empty-state">ログイン後に予約一覧を表示します。</div>';
       }
-    }
+    });
 
-    function setLoading(isLoading) {
-      registerBtn.disabled = isLoading;
-      loginBtn.disabled = isLoading;
-      logoutBtn.disabled = isLoading;
-    }
-
-    function setToday() {
-      const today = new Date();
-      const yyyy = today.getFullYear();
-      const mm = String(today.getMonth() + 1).padStart(2, '0');
-      const dd = String(today.getDate()).padStart(2, '0');
-      startDate.value = `${yyyy}-${mm}-${dd}`;
-      startDate.min = `${yyyy}-${mm}-${dd}`;
-    }
-
-    function calculateTotal() {
-      const selected = roomType.options[roomType.selectedIndex];
-      const price = Number(selected.dataset.price || 0);
-      const usageHours = Number(hours.value || 0);
-      totalAmount.textContent = `${(price * usageHours).toLocaleString('ja-JP')}円`;
-    }
-
-    function renderRooms(rooms) {
-      if (!rooms.length) {
-        roomList.innerHTML = '<div class="empty-state">まだ会議室マスタが登録されていません。管理者でログインして登録ボタンを押してください。</div>';
-        return;
-      }
-      roomList.innerHTML = rooms.map((room) => `
-        <div class="room-master-card">
-          <strong>${room.name}</strong>
-          <span>${room.typeLabel} / ${Number(room.pricePerHour).toLocaleString('ja-JP')}円・1時間</span>
-          <span>ID: ${room.id}</span>
-        </div>
-      `).join('');
-    }
-
-    async function seedRooms() {
+    seedRoomsBtn.addEventListener('click', async () => {
       if (!currentUser) {
-        location.hash = '#auth';
-        setBox(roomsMessage, '会議室マスタ登録にはログインが必要です。先にログインしてください。', 'error');
+        setBox(roomsMessage, '会議室マスタ登録にはログインが必要です。', 'error');
         return;
       }
       try {
         seedRoomsBtn.disabled = true;
-        setBox(roomsMessage, '会議室マスタをFirestoreへ登録中です...', 'info');
-        const batch = writeBatch(db);
-        roomMasters.forEach((room) => {
-          const roomRef = doc(db, 'rooms', room.id);
-          batch.set(roomRef, { ...room, updatedAt: serverTimestamp(), updatedBy: currentUser.uid }, { merge: true });
-        });
-        await batch.commit();
-        setBox(roomsMessage, `会議室マスタ${roomMasters.length}件を登録/更新しました。`, 'success');
+        setBox(roomsMessage, '会議室マスタを登録中です...', 'info');
+        await Promise.all(roomDefinitions.map((room) => setDoc(doc(db, 'rooms', room.id), {
+          ...room,
+          updatedAt: serverTimestamp(),
+          updatedBy: currentUser.uid
+        }, { merge: true })));
+        setBox(roomsMessage, '会議室マスタ25件を登録/更新しました。', 'success');
       } catch (error) {
         setBox(roomsMessage, getFirestoreErrorMessage(error), 'error');
       } finally {
         seedRoomsBtn.disabled = false;
       }
-    }
+    });
 
-    function listenRooms() {
+    function subscribeRooms() {
+      if (unsubscribeRooms) unsubscribeRooms();
       const roomsQuery = query(collection(db, 'rooms'), orderBy('sortOrder', 'asc'));
-      onSnapshot(roomsQuery, (snapshot) => {
-        const rooms = snapshot.docs.map((d) => ({ id: d.id, ...d.data() }));
-        renderRooms(rooms);
-        if (rooms.length > 0) setBox(roomsMessage, `Firestoreから会議室マスタ${rooms.length}件を読み込みました。`, 'success');
-        else setBox(roomsMessage, 'Firestoreに会議室マスタが未登録です。管理者で登録してください。', 'info');
+      unsubscribeRooms = onSnapshot(roomsQuery, (snapshot) => {
+        rooms = snapshot.docs.map((docSnap) => ({ id: docSnap.id, ...docSnap.data() })).filter((room) => room.active !== false);
+        roomMap = new Map(rooms.map((room) => [room.id, room]));
+        renderRooms();
+        renderRoomOptions();
+        updateReservationPreview();
+        setBox(roomsMessage, `会議室マスタを${rooms.length}件読み込みました。`, 'success');
       }, (error) => {
-        renderRooms([]);
         setBox(roomsMessage, getFirestoreErrorMessage(error), 'error');
+        reservationRoom.innerHTML = '<option value="">会議室マスタを読み込めません</option>';
       });
     }
 
-    registerBtn.addEventListener('click', async () => {
-      try {
-        setLoading(true);
-        const email = authEmail.value.trim();
-        const password = authPassword.value;
-        const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-        updateUserDisplay(userCredential.user);
-        setBox(authMessage, `会員登録が完了しました。UID: ${userCredential.user.uid}`, 'success');
-      } catch (error) {
-        setBox(authMessage, getAuthErrorMessage(error), 'error');
-      } finally {
-        setLoading(false);
-      }
-    });
-
-    loginBtn.addEventListener('click', async () => {
-      try {
-        setLoading(true);
-        const email = authEmail.value.trim();
-        const password = authPassword.value;
-        const userCredential = await signInWithEmailAndPassword(auth, email, password);
-        updateUserDisplay(userCredential.user);
-        setBox(authMessage, `ログインしました。UID: ${userCredential.user.uid}`, 'success');
-      } catch (error) {
-        setBox(authMessage, getAuthErrorMessage(error), 'error');
-      } finally {
-        setLoading(false);
-      }
-    });
-
-    logoutBtn.addEventListener('click', async () => {
-      try {
-        setLoading(true);
-        await signOut(auth);
-        updateUserDisplay(null);
-        setBox(authMessage, 'ログアウトしました。', 'info');
-      } catch (error) {
-        setBox(authMessage, getAuthErrorMessage(error), 'error');
-      } finally {
-        setLoading(false);
-      }
-    });
-
-    onAuthStateChanged(auth, (user) => {
-      updateUserDisplay(user);
-    }, (error) => {
-      setBox(debugMessage, getAuthErrorMessage(error), 'error');
-      setBox(authMessage, getAuthErrorMessage(error), 'error');
-    });
-
-    copyUidBtn.addEventListener('click', async () => {
-      if (!currentUser?.uid) {
-        setBox(debugMessage, 'まだUIDが取得できていません。先にログインしてください。', 'error');
+    function renderRooms() {
+      if (!rooms.length) {
+        roomList.innerHTML = '<div class="empty-state">会議室マスタが未登録です。管理者UID設定後、「会議室マスタを登録/更新」を押してください。</div>';
         return;
       }
-      try {
-        await navigator.clipboard.writeText(currentUser.uid);
-        setBox(debugMessage, 'UIDをコピーしました。Firestore RulesのYOUR_ADMIN_UIDに貼り付けてください。', 'success');
-      } catch (error) {
-        setBox(debugMessage, `コピーに失敗しました。UIDを手動で選択してコピーしてください：${currentUser.uid}`, 'error');
+      roomList.innerHTML = rooms.map((room) => `
+        <div class="room-master-card">
+          <strong>${room.name}</strong>
+          <span>${room.typeLabel} / ${yen(room.pricePerHour)} / 時間</span>
+          <span>ID: ${room.id}</span>
+        </div>
+      `).join('');
+    }
+
+    function renderRoomOptions() {
+      const before = reservationRoom.value;
+      if (!rooms.length) {
+        reservationRoom.innerHTML = '<option value="">会議室マスタが未登録です</option>';
+        return;
       }
-    });
+      reservationRoom.innerHTML = rooms.map((room) => `<option value="${room.id}">${room.name}：${yen(room.pricePerHour)}/時間</option>`).join('');
+      if (before && roomMap.has(before)) reservationRoom.value = before;
+    }
 
-    refreshAuthBtn.addEventListener('click', () => {
-      updateUserDisplay(auth.currentUser);
-      if (auth.currentUser) setBox(authMessage, `ログイン状態を再確認しました。UID: ${auth.currentUser.uid}`, 'success');
-      else setBox(authMessage, '現在は未ログインです。ログイン後にUIDが表示されます。', 'info');
-    });
+    function renderSlotGrid() {
+      const room = getSelectedRoom();
+      const date = reservationDate.value;
+      const draft = getReservationDraft();
+      if (!room || !date) {
+        slotGrid.innerHTML = '<div class="empty-state">会議室と日付を選ぶと、24時間分の空き状況を表示します。</div>';
+        calendarRoomLabel.textContent = '会議室未選択';
+        return;
+      }
+      calendarRoomLabel.textContent = `${room.name} / ${date}`;
+      const selectedKeys = new Set((draft?.slots || []).filter((s) => s.date === date).map((s) => `${s.date}_${s.hour}`));
+      let html = '';
+      for (let h = 0; h <= 23; h += 1) {
+        const slotId = buildSlotId(room.id, date, h);
+        const booked = currentDaySlots.has(slotId);
+        const selected = selectedKeys.has(`${date}_${h}`);
+        const className = ['slot', booked ? 'booked' : '', selected ? 'selected' : ''].filter(Boolean).join(' ');
+        html += `<div class="${className}">${pad2(h)}:00<br>${booked ? '予約済み' : '空き'}</div>`;
+      }
+      slotGrid.innerHTML = html;
+    }
 
-    reserveDemoBtn.addEventListener('click', () => {
+    function subscribeSlotsForSelectedDay() {
+      const room = getSelectedRoom();
+      const date = reservationDate.value;
+      if (unsubscribeSlots) {
+        unsubscribeSlots();
+        unsubscribeSlots = null;
+      }
+      currentDaySlots = new Map();
+      if (!room || !date) {
+        renderSlotGrid();
+        return;
+      }
+      const slotsQuery = query(collection(db, 'room_slots'), where('slotGroup', '==', buildSlotGroup(room.id, date)));
+      unsubscribeSlots = onSnapshot(slotsQuery, (snapshot) => {
+        currentDaySlots = new Map(snapshot.docs.map((docSnap) => [docSnap.id, docSnap.data()]));
+        renderSlotGrid();
+      }, (error) => {
+        slotGrid.innerHTML = `<div class="empty-state">${getFirestoreErrorMessage(error)}</div>`;
+      });
+    }
+
+    reloadSlotsBtn.addEventListener('click', subscribeSlotsForSelectedDay);
+
+    reservationRoom.addEventListener('change', updateReservationPreview);
+    reservationDate.addEventListener('change', updateReservationPreview);
+    reservationStartHour.addEventListener('change', updateReservationPreview);
+    reservationHours.addEventListener('change', updateReservationPreview);
+
+    reservationForm.addEventListener('submit', async (event) => {
+      event.preventDefault();
       if (!currentUser) {
+        setBox(reservationMessage, '予約するには、先に会員登録またはログインしてください。', 'error');
         location.hash = '#auth';
-        setBox(authMessage, '予約するには、先に会員登録またはログインしてください。', 'error');
         return;
       }
-      alert('ログイン確認OKです。次工程で予約データ登録と二重予約防止を実装します。');
+      const draft = getReservationDraft();
+      if (!draft) {
+        setBox(reservationMessage, '会議室と時間を選択してください。', 'error');
+        return;
+      }
+      if (draft.hours < 1 || draft.hours > 24) {
+        setBox(reservationMessage, '利用時間は1時間以上24時間以内で選択してください。', 'error');
+        return;
+      }
+      if (draft.startDate < new Date()) {
+        setBox(reservationMessage, '過去日時は予約できません。', 'error');
+        return;
+      }
+
+      const reservationId = `res_${crypto.randomUUID()}`;
+      const reservationRef = doc(db, 'reservations', reservationId);
+      const reservationData = {
+        userId: currentUser.uid,
+        userEmail: currentUser.email || '',
+        roomId: draft.room.id,
+        roomName: draft.room.name,
+        roomType: draft.room.type,
+        roomTypeLabel: draft.room.typeLabel,
+        pricePerHour: draft.room.pricePerHour,
+        startAt: Timestamp.fromDate(draft.startDate),
+        endAt: Timestamp.fromDate(draft.endDate),
+        startDate: formatDateLocal(draft.startDate),
+        endDate: formatDateLocal(draft.endDate),
+        startHour: draft.startDate.getHours(),
+        hours: draft.hours,
+        amount: draft.amount,
+        status: 'reserved',
+        createdAt: serverTimestamp(),
+        updatedAt: serverTimestamp()
+      };
+
+      try {
+        createReservationBtn.disabled = true;
+        setBox(reservationMessage, '予約を登録中です。時間枠の空きを確認しています...', 'info');
+        await runTransaction(db, async (transaction) => {
+          const slotRefs = draft.slots.map((slot) => ({ slot, ref: doc(db, 'room_slots', slot.id) }));
+          for (const item of slotRefs) {
+            const snap = await transaction.get(item.ref);
+            if (snap.exists()) {
+              throw new Error(`${item.slot.date} ${pad2(item.slot.hour)}:00 はすでに予約済みです。`);
+            }
+          }
+          transaction.set(reservationRef, reservationData);
+          for (const item of slotRefs) {
+            transaction.set(item.ref, {
+              slotGroup: item.slot.slotGroup,
+              roomId: item.slot.roomId,
+              date: item.slot.date,
+              hour: item.slot.hour,
+              reservationId,
+              status: 'reserved',
+              createdAt: serverTimestamp()
+            });
+          }
+        });
+        setBox(reservationMessage, `予約が完了しました。予約番号：${reservationId}`, 'success');
+        location.hash = '#myreservations';
+      } catch (error) {
+        const message = error?.message?.includes('すでに予約済み') ? error.message : getFirestoreErrorMessage(error);
+        setBox(reservationMessage, message, 'error');
+      } finally {
+        createReservationBtn.disabled = false;
+      }
     });
 
-    seedRoomsBtn.addEventListener('click', seedRooms);
-    roomType.addEventListener('change', calculateTotal);
-    hours.addEventListener('change', calculateTotal);
-    setToday();
-    calculateTotal();
-    listenRooms();
+    function subscribeMyReservations() {
+      if (unsubscribeMyReservations) unsubscribeMyReservations();
+      if (!currentUser) return;
+      const myQuery = query(collection(db, 'reservations'), where('userId', '==', currentUser.uid));
+      unsubscribeMyReservations = onSnapshot(myQuery, (snapshot) => {
+        const list = snapshot.docs.map((docSnap) => ({ id: docSnap.id, ...docSnap.data() }))
+          .sort((a, b) => (b.createdAt?.seconds || 0) - (a.createdAt?.seconds || 0));
+        renderMyReservations(list);
+        setBox(myReservationsMessage, `予約を${list.length}件読み込みました。`, 'success');
+      }, (error) => {
+        setBox(myReservationsMessage, getFirestoreErrorMessage(error), 'error');
+      });
+    }
+
+    function renderMyReservations(list) {
+      if (!list.length) {
+        myReservationsList.innerHTML = '<div class="empty-state">予約はまだありません。</div>';
+        return;
+      }
+      myReservationsList.innerHTML = list.map((reservation) => {
+        const start = reservation.startAt?.toDate ? formatDateTimeLocal(reservation.startAt.toDate()) : `${reservation.startDate || ''} ${pad2(reservation.startHour || 0)}:00`;
+        const end = reservation.endAt?.toDate ? formatDateTimeLocal(reservation.endAt.toDate()) : reservation.endDate || '';
+        const statusLabel = reservation.status === 'cancelled' ? 'キャンセル済み' : '予約中';
+        const canCancel = reservation.status === 'reserved';
+        return `
+          <div class="reservation-item">
+            <strong>${reservation.roomName} <span class="pill ${canCancel ? 'success' : 'warn'}">${statusLabel}</span></strong>
+            <small>${start} 〜 ${end} / ${reservation.hours}時間 / ${yen(reservation.amount)}</small>
+            <small>予約番号: ${reservation.id}</small>
+            <div class="row">
+              <span>${reservation.roomTypeLabel} / ${yen(reservation.pricePerHour)}/時間</span>
+              <button class="btn danger small" data-cancel-id="${reservation.id}" ${canCancel ? '' : 'disabled'}>キャンセル</button>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    myReservationsList.addEventListener('click', async (event) => {
+      const button = event.target.closest('[data-cancel-id]');
+      if (!button) return;
+      const reservationId = button.dataset.cancelId;
+      if (!reservationId || !currentUser) return;
+      const ok = confirm('この予約をキャンセルしますか？');
+      if (!ok) return;
+      try {
+        button.disabled = true;
+        setBox(myReservationsMessage, '予約をキャンセル中です...', 'info');
+        const slotQuery = query(collection(db, 'room_slots'), where('reservationId', '==', reservationId));
+        const slotSnapshot = await getDocs(slotQuery);
+        await runTransaction(db, async (transaction) => {
+          const reservationRef = doc(db, 'reservations', reservationId);
+          const reservationSnap = await transaction.get(reservationRef);
+          if (!reservationSnap.exists()) throw new Error('予約が見つかりません。');
+          const reservation = reservationSnap.data();
+          if (reservation.userId !== currentUser.uid) throw new Error('自分の予約以外はキャンセルできません。');
+          if (reservation.status !== 'reserved') throw new Error('この予約はすでにキャンセル済みです。');
+          transaction.update(reservationRef, { status: 'cancelled', updatedAt: serverTimestamp(), cancelledAt: serverTimestamp() });
+          slotSnapshot.docs.forEach((slotDoc) => transaction.delete(slotDoc.ref));
+        });
+        setBox(myReservationsMessage, '予約をキャンセルしました。該当時間枠は空きに戻りました。', 'success');
+      } catch (error) {
+        const message = error?.message && !error.code ? error.message : getFirestoreErrorMessage(error);
+        setBox(myReservationsMessage, message, 'error');
+      } finally {
+        button.disabled = false;
+      }
+    });
+
+    reloadMyReservationsBtn.addEventListener('click', subscribeMyReservations);
+
+    setDefaultInputs();
+    subscribeRooms();
+    updateReservationPreview();
   </script>
 </body>
 </html>

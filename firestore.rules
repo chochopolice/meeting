@@ -1,35 +1,158 @@
 rules_version = '2';
+
 service cloud.firestore {
   match /databases/{database}/documents {
-    function signedIn() {
+    function isSignedIn() {
       return request.auth != null;
     }
 
     function isAdmin() {
-      return signedIn() && request.auth.uid in [
+      return isSignedIn() && request.auth.uid in [
         "YOUR_ADMIN_UID"
       ];
     }
 
+    function isValidRoom() {
+      return request.resource.data.keys().hasOnly([
+          "id",
+          "name",
+          "type",
+          "typeLabel",
+          "pricePerHour",
+          "sortOrder",
+          "active",
+          "updatedAt",
+          "updatedBy"
+        ])
+        && request.resource.data.id is string
+        && request.resource.data.name is string
+        && request.resource.data.type in ["large", "medium", "small"]
+        && request.resource.data.typeLabel in ["大", "中", "小"]
+        && request.resource.data.pricePerHour in [100, 200, 300]
+        && request.resource.data.sortOrder is int
+        && request.resource.data.active is bool
+        && request.resource.data.updatedBy == request.auth.uid;
+    }
+
+    function isValidReservationCreate() {
+      return request.resource.data.keys().hasOnly([
+          "userId",
+          "userEmail",
+          "roomId",
+          "roomName",
+          "roomType",
+          "roomTypeLabel",
+          "pricePerHour",
+          "startAt",
+          "endAt",
+          "startDate",
+          "endDate",
+          "startHour",
+          "hours",
+          "amount",
+          "status",
+          "createdAt",
+          "updatedAt"
+        ])
+        && request.resource.data.userId == request.auth.uid
+        && request.resource.data.userEmail is string
+        && request.resource.data.roomId is string
+        && request.resource.data.roomName is string
+        && request.resource.data.roomType in ["large", "medium", "small"]
+        && request.resource.data.roomTypeLabel in ["大", "中", "小"]
+        && request.resource.data.pricePerHour in [100, 200, 300]
+        && request.resource.data.startAt is timestamp
+        && request.resource.data.endAt is timestamp
+        && request.resource.data.startAt > request.time
+        && request.resource.data.endAt > request.resource.data.startAt
+        && request.resource.data.startDate is string
+        && request.resource.data.endDate is string
+        && request.resource.data.startHour is int
+        && request.resource.data.startHour >= 0
+        && request.resource.data.startHour <= 23
+        && request.resource.data.hours is int
+        && request.resource.data.hours >= 1
+        && request.resource.data.hours <= 24
+        && request.resource.data.amount == request.resource.data.pricePerHour * request.resource.data.hours
+        && request.resource.data.status == "reserved";
+    }
+
+    function isValidReservationCancel() {
+      return isSignedIn()
+        && resource.data.userId == request.auth.uid
+        && resource.data.status == "reserved"
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly([
+          "status",
+          "updatedAt",
+          "cancelledAt"
+        ])
+        && request.resource.data.status == "cancelled";
+    }
+
+    function reservationPath(reservationId) {
+      return /databases/$(database)/documents/reservations/$(reservationId);
+    }
+
+    function isValidSlotCreate() {
+      return isSignedIn()
+        && request.resource.data.keys().hasOnly([
+          "slotGroup",
+          "roomId",
+          "date",
+          "hour",
+          "reservationId",
+          "status",
+          "createdAt"
+        ])
+        && request.resource.data.slotGroup is string
+        && request.resource.data.roomId is string
+        && request.resource.data.date is string
+        && request.resource.data.hour is int
+        && request.resource.data.hour >= 0
+        && request.resource.data.hour <= 23
+        && request.resource.data.reservationId is string
+        && request.resource.data.status == "reserved"
+        && existsAfter(reservationPath(request.resource.data.reservationId))
+        && getAfter(reservationPath(request.resource.data.reservationId)).data.userId == request.auth.uid
+        && getAfter(reservationPath(request.resource.data.reservationId)).data.roomId == request.resource.data.roomId;
+    }
+
+    function canDeleteSlot() {
+      return isSignedIn()
+        && resource.data.reservationId is string
+        && exists(reservationPath(resource.data.reservationId))
+        && (
+          isAdmin()
+          || get(reservationPath(resource.data.reservationId)).data.userId == request.auth.uid
+        );
+    }
+
     match /rooms/{roomId} {
       allow read: if true;
-      allow create, update, delete: if isAdmin();
+      allow create, update: if isAdmin() && isValidRoom();
+      allow delete: if isAdmin();
     }
 
     match /reservations/{reservationId} {
-      allow read: if signedIn() && (resource.data.userId == request.auth.uid || isAdmin());
-      allow create: if signedIn() && request.resource.data.userId == request.auth.uid;
-      allow update, delete: if signedIn() && (resource.data.userId == request.auth.uid || isAdmin());
+      allow create: if isSignedIn() && isValidReservationCreate();
+      allow read: if isSignedIn() && (resource.data.userId == request.auth.uid || isAdmin());
+      allow update: if isAdmin() || isValidReservationCancel();
+      allow delete: if isAdmin();
     }
 
     match /room_slots/{slotId} {
       allow read: if true;
-      allow create, update, delete: if signedIn();
+      allow create: if isValidSlotCreate();
+      allow update: if isAdmin();
+      allow delete: if canDeleteSlot();
     }
 
     match /admin_logs/{logId} {
-      allow read, create: if isAdmin();
-      allow update, delete: if false;
+      allow read, write: if isAdmin();
+    }
+
+    match /{document=**} {
+      allow read, write: if false;
     }
   }
 }
