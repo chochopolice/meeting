@@ -1,43 +1,27 @@
 # レンタル会議室予約システム
 
-GitHub Pages + Firebase で作るレンタル会議室予約システムのMVPです。
+GitHub Pages + Firebase Authentication + Cloud Firestoreで構築するレンタル会議室予約システムです。
 
-## 今回の状態
+## 構成
 
-- GitHub Pages用の静的サイト
-- Firebase Authenticationによる会員登録・ログイン・ログアウト
-- Cloud Firestore接続
-- rooms コレクションへの会議室マスタ登録/更新
-- Firestoreからの会議室マスタ読み込み
+- `index.html`: サイト本体
+- `firestore.rules`: Firestore Security Rulesサンプル
+- `.nojekyll`: GitHub Pages用
 
-## ファイル
+## 反映方法
 
-- `index.html`：サイト本体
-- `.nojekyll`：GitHub Pages用
-- `firestore.rules`：Firestore Security Rulesのサンプル
+リポジトリ直下へ以下をアップロードしてください。
 
-## Firestore Security Rules設定
+- index.html
+- README.md
+- .nojekyll
+- firestore.rules
 
-1. GitHub Pagesに `index.html` を反映する
-2. サイトでログインする
-3. 画面の「UID」をコピーする
-4. Firebase Console → Firestore Database → ルール を開く
-5. `firestore.rules` の内容を貼り付ける
-6. `YOUR_ADMIN_UID` をコピーしたUIDに置き換える
-7. 公開する
-8. サイトの「会議室マスタを登録/更新」を押す
+## UID確認
 
-## 登録される会議室
+GitHub Pagesを開き、会員登録またはログインします。
+ログイン状態欄の「管理者設定用UID」をコピーし、Firebase ConsoleのFirestore Rulesにある `YOUR_ADMIN_UID` と置き換えます。
 
-- 大会議室：3室、300円/時間
-- 中会議室：7室、200円/時間
-- 小会議室：15室、100円/時間
+## 会議室マスタ登録
 
-合計25室です。
-
-## 次工程
-
-- 予約登録機能
-- 二重予約防止用の room_slots コレクション
-- マイページの予約一覧
-- 管理者による予約変更・削除・上書き
+Firestore Rulesを公開後、サイト上の「会議室マスタを登録/更新」ボタンを押します。

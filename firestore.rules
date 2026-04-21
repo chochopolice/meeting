@@ -1,59 +1,35 @@
 rules_version = '2';
-
 service cloud.firestore {
   match /databases/{database}/documents {
-    function isSignedIn() {
+    function signedIn() {
       return request.auth != null;
     }
 
     function isAdmin() {
-      return isSignedIn() && request.auth.uid in [
+      return signedIn() && request.auth.uid in [
         "YOUR_ADMIN_UID"
       ];
     }
 
-    function isValidRoom() {
-      return request.resource.data.keys().hasOnly([
-          "id",
-          "name",
-          "type",
-          "typeLabel",
-          "pricePerHour",
-          "sortOrder",
-          "active",
-          "updatedAt",
-          "updatedBy"
-        ])
-        && request.resource.data.id is string
-        && request.resource.data.name is string
-        && request.resource.data.type in ["large", "medium", "small"]
-        && request.resource.data.typeLabel in ["大", "中", "小"]
-        && request.resource.data.pricePerHour in [100, 200, 300]
-        && request.resource.data.sortOrder is int
-        && request.resource.data.active is bool
-        && request.resource.data.updatedBy == request.auth.uid;
-    }
-
     match /rooms/{roomId} {
       allow read: if true;
-      allow create, update: if isAdmin() && isValidRoom();
-      allow delete: if isAdmin();
+      allow create, update, delete: if isAdmin();
     }
 
     match /reservations/{reservationId} {
-      allow read, write: if false;
+      allow read: if signedIn() && (resource.data.userId == request.auth.uid || isAdmin());
+      allow create: if signedIn() && request.resource.data.userId == request.auth.uid;
+      allow update, delete: if signedIn() && (resource.data.userId == request.auth.uid || isAdmin());
     }
 
     match /room_slots/{slotId} {
-      allow read, write: if false;
+      allow read: if true;
+      allow create, update, delete: if signedIn();
     }
 
     match /admin_logs/{logId} {
-      allow read, write: if false;
-    }
-
-    match /{document=**} {
-      allow read, write: if false;
+      allow read, create: if isAdmin();
+      allow update, delete: if false;
     }
   }
 }
