@@ -1,31 +1,46 @@
-# レンタル会議室予約システム GitHub Pages版
+# レンタル会議室予約システム
 
-GitHub Pagesで公開するための最初の静的ページです。
+GitHub Pages + Firebase Authentication で動く、レンタル会議室予約サイトの初期版です。
 
-## ファイル構成
+## 現在できること
 
-```text
-rental-meeting-room-site/
-├── index.html
-├── README.md
-└── .nojekyll
-```
+- トップページ表示
+- 会議室料金表示
+- 予約フォームのデモ表示
+- Firebase Authentication による会員登録
+- Firebase Authentication によるログイン
+- ログアウト
+- ログイン状態の画面反映
 
-## 公開手順
+## まだ未実装のこと
 
-1. GitHubで新しいリポジトリを作成します。
-2. `index.html`、`README.md`、`.nojekyll` をリポジトリ直下へアップロードします。
-3. GitHubのリポジトリ画面で `Settings` を開きます。
-4. 左メニューの `Pages` を開きます。
-5. `Build and deployment` の `Source` を `Deploy from a branch` にします。
-6. `Branch` を `main`、フォルダを `/ (root)` にして `Save` します。
-7. 数分後、GitHub PagesのURLで公開されます。
-
-## 次に実装する予定
-
-- Firebase Authenticationによる会員登録・ログイン
-- Cloud Firestoreへの会議室マスタ登録
-- 予約登録機能
-- 二重予約防止用の時間枠ロック
-- 予約カレンダーのリアルタイム反映
+- Firestore への会議室マスタ登録
+- Firestore への予約登録
+- 二重予約防止
+- 会議室ごとのリアルタイムカレンダー
+- マイページ
 - 管理者画面
+
+## GitHub Pages への反映
+
+1. このフォルダの `index.html`、`README.md`、`.nojekyll` をリポジトリ直下へアップロードします。
+2. GitHub の `Settings` → `Pages` を開きます。
+3. Source を `Deploy from a branch` にします。
+4. Branch を `main`、フォルダを `/ (root)` にします。
+5. 数分後に公開URLへアクセスします。
+
+## Firebase Authentication の注意
+
+GitHub Pages のURLでログインエラーが出る場合は、Firebase Consoleで以下を確認してください。
+
+Authentication → Settings → Authorized domains
+
+ここに GitHub Pages のドメインを追加します。
+
+例：
+
+- chochopolice.github.io
+
+## 次の工程
+
+次は Cloud Firestore を接続し、会議室マスタと予約登録機能を追加します。
