@@ -75,13 +75,26 @@
     .quick-room-btn { flex: 0 0 auto; scroll-snap-align: start; border: 1px solid var(--line); background: #fff; border-radius: 999px; padding: 9px 12px; font-weight: 900; color: var(--text); min-height: 42px; }
     .quick-room-btn small { color: var(--muted); font-weight: 800; margin-left: 4px; }
     .quick-room-btn.active { border-color: var(--primary); background: #eff6ff; color: var(--primary-dark); outline: 3px solid rgba(37,99,235,.14); }
-    .reservation-flow-summary { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin: 14px 0; }
+    .reservation-flow-summary { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin: 14px 0; }
     .flow-summary-item { padding: 12px; border: 1px solid var(--line); border-radius: 16px; background: #fff; }
     .flow-summary-item span { display: block; color: var(--muted); font-size: 12px; font-weight: 800; }
     .flow-summary-item strong { display: block; margin-top: 3px; font-size: 15px; line-height: 1.35; }
     .mobile-bottom-nav { display: none; position: fixed; left: 10px; right: 10px; bottom: 10px; z-index: 30; grid-template-columns: repeat(4, 1fr); gap: 6px; padding: 8px; border: 1px solid var(--line); border-radius: 22px; background: rgba(255,255,255,.96); box-shadow: 0 18px 42px rgba(15,23,42,.18); backdrop-filter: blur(12px); }
     .mobile-bottom-nav a { display: grid; place-items: center; min-height: 44px; border-radius: 16px; color: var(--muted); font-size: 12px; font-weight: 900; }
     .mobile-bottom-nav a.primary { background: var(--primary); color: #fff; }
+
+    .payment-options { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 8px; }
+    .payment-option { display: block; border: 1px solid var(--line); border-radius: 18px; background: #fff; padding: 14px; cursor: pointer; transition: .2s; }
+    .payment-option:hover { border-color: var(--primary); box-shadow: 0 8px 18px rgba(37,99,235,.08); }
+    .payment-option input { width: auto; margin: 0 8px 0 0; }
+    .payment-option strong { display: inline-flex; align-items: center; gap: 6px; font-size: 15px; }
+    .payment-option span { display: block; margin-top: 6px; color: var(--muted); font-size: 12px; line-height: 1.45; }
+    .payment-option:has(input:checked) { border-color: var(--primary); background: #eff6ff; outline: 3px solid rgba(37,99,235,.14); }
+    .payment-option.is-preparing { background: #f8fafc; }
+    .payment-method-chip { display: inline-flex; align-items: center; gap: 6px; padding: 4px 9px; border-radius: 999px; background: #f1f5f9; color: var(--muted); font-weight: 900; font-size: 12px; }
+    .payment-method-chip.onsite { background: #ecfdf5; color: #166534; }
+    .payment-method-chip.credit { background: #eff6ff; color: #1e40af; }
+    .payment-method-chip.paypay { background: #fff1f2; color: #9f1239; }
     .pill.warn { background: #fffbeb; color: #92400e; }
     .pill.success { background: #ecfdf5; color: #166534; }
     .price { font-size: 38px; font-weight: 900; letter-spacing: -.04em; margin: 0; }
@@ -191,7 +204,7 @@
       section { padding: 38px 0; }
       .hero { padding: 38px 0 30px; }
       .hero-actions .btn, .form-card .btn, .auth-actions .btn { width: 100%; }
-      .room-list, .slots, .inline-grid, .auth-actions, .calendar-toolbar, .calendar-summary, .admin-controls, .admin-edit-grid, .log-toolbar, .reservation-stepper, .reservation-flow-summary { grid-template-columns: 1fr; }
+      .room-list, .slots, .inline-grid, .auth-actions, .calendar-toolbar, .calendar-summary, .admin-controls, .admin-edit-grid, .log-toolbar, .reservation-stepper, .reservation-flow-summary, .payment-options { grid-template-columns: 1fr; }
       .card, .auth-card, .form-card, .calendar, .master-panel, .admin-item, .history-card, .wide-calendar { padding: 18px; }
       input, select { min-height: 48px; font-size: 16px; }
       .slot { min-height: 48px; display: grid; place-items: center; }
@@ -296,12 +309,12 @@
 
     <section id="calendar">
       <div class="container">
-        <div class="section-title"><h2>予約登録</h2><p>会議室・利用日・開始時間・利用時間を選択して予約できます。最大24時間まで対応しています。</p></div>
+        <div class="section-title"><h2>予約登録</h2><p>会議室・利用日・開始時間・利用時間・支払い方法を選択して予約できます。最大24時間まで対応しています。</p></div>
         <div class="reservation-stepper" aria-label="予約手順">
           <div class="step-card"><span>1</span><strong>会議室を選ぶ</strong></div>
           <div class="step-card"><span>2</span><strong>日時を選ぶ</strong></div>
           <div class="step-card"><span>3</span><strong>料金を確認</strong></div>
-          <div class="step-card"><span>4</span><strong>予約する</strong></div>
+          <div class="step-card"><span>4</span><strong>支払い/予約</strong></div>
         </div>
         <div class="calendar-wrap">
           <form class="form-card" id="reservationForm">
@@ -316,14 +329,36 @@
               <div class="field"><label for="reservationStartHour">開始時間</label><select id="reservationStartHour"></select></div>
             </div>
             <div class="field"><label for="reservationHours">利用時間</label><select id="reservationHours"></select></div>
+            <div class="field">
+              <label>支払い方法</label>
+              <div class="payment-options" id="paymentOptions" role="radiogroup" aria-label="支払い方法">
+                <label class="payment-option">
+                  <input type="radio" name="paymentMethod" value="onsite" checked />
+                  <strong>現地決済</strong>
+                  <span>受付時に現金・店頭決済で支払います。現在の無料構成で利用できます。</span>
+                </label>
+                <label class="payment-option is-preparing">
+                  <input type="radio" name="paymentMethod" value="credit" />
+                  <strong>クレジットカード</strong>
+                  <span>Stripe等の外部決済連携後に利用します。カード番号はこの画面では入力しません。</span>
+                </label>
+                <label class="payment-option is-preparing">
+                  <input type="radio" name="paymentMethod" value="paypay" />
+                  <strong>PayPay</strong>
+                  <span>StripeまたはPayPay API連携後に利用します。決済画面へ遷移する方式を想定します。</span>
+                </label>
+              </div>
+              <div id="paymentNotice" class="status-box info">現時点で予約確定できるのは現地決済です。クレジットカード・PayPayは外部決済連携後に有効化します。</div>
+            </div>
             <div class="reservation-flow-summary" aria-label="予約内容サマリー">
               <div class="flow-summary-item"><span>会議室</span><strong id="mobileSummaryRoom">未選択</strong></div>
               <div class="flow-summary-item"><span>時間</span><strong id="mobileSummaryTime">-</strong></div>
               <div class="flow-summary-item"><span>料金</span><strong id="mobileSummaryAmount">0円</strong></div>
+              <div class="flow-summary-item"><span>支払い</span><strong id="mobileSummaryPayment">現地決済</strong></div>
             </div>
             <div class="total"><span>利用料金</span><span id="reservationAmount">0円</span></div>
             <div class="status-box info" id="reservationPreview">会議室と時間を選択してください。</div>
-            <button class="btn" id="createReservationBtn" type="submit">この内容で予約する</button>
+            <button class="btn" id="createReservationBtn" type="submit">この内容で予約を確定する</button>
             <div id="reservationMessage" class="status-box info">ログイン後、予約登録できます。</div>
           </form>
 
@@ -566,6 +601,9 @@
     const mobileSummaryRoom = $('mobileSummaryRoom');
     const mobileSummaryTime = $('mobileSummaryTime');
     const mobileSummaryAmount = $('mobileSummaryAmount');
+    const mobileSummaryPayment = $('mobileSummaryPayment');
+    const paymentOptions = $('paymentOptions');
+    const paymentNotice = $('paymentNotice');
     const reservationDate = $('reservationDate');
     const reservationStartHour = $('reservationStartHour');
     const reservationHours = $('reservationHours');
@@ -771,6 +809,40 @@
       if (!reservationHours.value) reservationHours.value = '1';
     }
 
+    const PAYMENT_METHODS = {
+      onsite: { label: '現地決済', status: 'unpaid_on_site', chipClass: 'onsite', online: false },
+      credit: { label: 'クレジットカード', status: 'online_payment_not_connected', chipClass: 'credit', online: true },
+      paypay: { label: 'PayPay', status: 'online_payment_not_connected', chipClass: 'paypay', online: true }
+    };
+
+    function getSelectedPaymentMethod() {
+      const checked = document.querySelector('input[name="paymentMethod"]:checked');
+      return checked?.value || 'onsite';
+    }
+
+    function getPaymentConfig(method) {
+      return PAYMENT_METHODS[method] || PAYMENT_METHODS.onsite;
+    }
+
+    function renderPaymentChip(method, status) {
+      const config = getPaymentConfig(method);
+      const statusLabel = status === 'paid' ? '支払済' : status === 'unpaid_on_site' ? '現地未決済' : status === 'online_payment_not_connected' ? '連携準備中' : status || '未決済';
+      return `<span class="payment-method-chip ${config.chipClass}">${config.label} / ${statusLabel}</span>`;
+    }
+
+    function updatePaymentNotice() {
+      const method = getSelectedPaymentMethod();
+      const config = getPaymentConfig(method);
+      if (config.online) {
+        setBox(paymentNotice, `${config.label}で予約時決済を行うには、Stripe CheckoutやPayPay APIなどの外部決済連携が必要です。カード番号やPayPay情報はこの画面では扱いません。`, 'info');
+        createReservationBtn.textContent = `${config.label}連携後に予約確定`;
+      } else {
+        setBox(paymentNotice, '現地決済を選択中です。予約は確定し、支払い状態は「現地未決済」として管理者画面・Firebaseに保存されます。', 'success');
+        createReservationBtn.textContent = 'この内容で予約を確定する';
+      }
+      if (mobileSummaryPayment) mobileSummaryPayment.textContent = config.label;
+    }
+
     function getReservationDraft() {
       const room = getSelectedRoom();
       const date = reservationDate.value;
@@ -780,6 +852,8 @@
       const startDate = createLocalDate(date, startHour);
       const endDate = addHours(startDate, hours);
       const amount = room.pricePerHour * hours;
+      const paymentMethod = getSelectedPaymentMethod();
+      const paymentConfig = getPaymentConfig(paymentMethod);
       const slots = [];
       for (let i = 0; i < hours; i += 1) {
         const slotDateObj = addHours(startDate, i);
@@ -793,7 +867,7 @@
           hour: slotHour
         });
       }
-      return { room, date, startHour, hours, startDate, endDate, amount, slots };
+      return { room, date, startHour, hours, startDate, endDate, amount, slots, paymentMethod, paymentConfig };
     }
 
     function updateReservationPreview() {
@@ -807,6 +881,8 @@
         mobileSummaryRoom.textContent = '未選択';
         mobileSummaryTime.textContent = '-';
         mobileSummaryAmount.textContent = yen(0);
+        if (mobileSummaryPayment) mobileSummaryPayment.textContent = getPaymentConfig(getSelectedPaymentMethod()).label;
+        updatePaymentNotice();
         syncQuickRoomButtons();
         return;
       }
@@ -819,6 +895,8 @@
       mobileSummaryRoom.textContent = draft.room.name;
       mobileSummaryTime.textContent = `${pad2(draft.startDate.getHours())}:00 - ${pad2(draft.endDate.getHours())}:00`;
       mobileSummaryAmount.textContent = yen(draft.amount);
+      if (mobileSummaryPayment) mobileSummaryPayment.textContent = draft.paymentConfig.label;
+      updatePaymentNotice();
       syncQuickRoomButtons();
       renderSlotGrid();
       subscribeSlotsForSelectedDay();
@@ -1114,6 +1192,7 @@
     reservationDate.addEventListener('change', updateReservationPreview);
     reservationStartHour.addEventListener('change', updateReservationPreview);
     reservationHours.addEventListener('change', updateReservationPreview);
+    paymentOptions?.addEventListener('change', updateReservationPreview);
 
     reservationForm.addEventListener('submit', async (event) => {
       event.preventDefault();
@@ -1135,6 +1214,10 @@
         setBox(reservationMessage, '過去日時は予約できません。', 'error');
         return;
       }
+      if (draft.paymentConfig.online) {
+        setBox(reservationMessage, `${draft.paymentConfig.label}で予約時決済するには外部決済連携が必要です。現時点では現地決済を選択してください。`, 'error');
+        return;
+      }
 
       const reservationId = `res_${crypto.randomUUID()}`;
       const reservationRef = doc(db, 'reservations', reservationId);
@@ -1153,6 +1236,10 @@
         startHour: draft.startDate.getHours(),
         hours: draft.hours,
         amount: draft.amount,
+        paymentMethod: draft.paymentMethod,
+        paymentMethodLabel: draft.paymentConfig.label,
+        paymentStatus: draft.paymentConfig.status,
+        paymentProvider: draft.paymentConfig.online ? 'external' : 'onsite',
         status: 'reserved',
         createdAt: serverTimestamp(),
         updatedAt: serverTimestamp()
@@ -1223,6 +1310,7 @@
           <div class="reservation-item">
             <strong>${reservation.roomName} <span class="pill ${canCancel ? 'success' : 'warn'}">${statusLabel}</span></strong>
             <small>${start} 〜 ${end} / ${reservation.hours}時間 / ${yen(reservation.amount)}</small>
+            <div style="margin-top:8px;">${renderPaymentChip(reservation.paymentMethod, reservation.paymentStatus)}</div>
             <small>予約番号: ${reservation.id}</small>
             <div class="row">
               <span>${reservation.roomTypeLabel} / ${yen(reservation.pricePerHour)}/時間</span>
@@ -1497,6 +1585,7 @@
           <div class="admin-reservation-card ${selected ? 'is-selected' : ''}">
             <strong>${reservation.roomName || reservation.roomId} <span class="pill ${isActive ? 'success' : 'warn'}">${statusText(reservation.status)}</span></strong>
             <small>${start} 〜 ${end} / ${reservation.hours}時間 / ${yen(reservation.amount)}</small>
+            <div style="margin-top:8px;">${renderPaymentChip(reservation.paymentMethod, reservation.paymentStatus)}</div>
             <small>予約番号: ${reservation.id}</small>
             <small>ユーザー: ${reservation.userEmail || reservation.userId || '-'}</small>
             <div class="admin-action-row">
