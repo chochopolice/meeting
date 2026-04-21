@@ -8,7 +8,7 @@ service cloud.firestore {
 
     function isAdmin() {
       return isSignedIn() && request.auth.uid in [
-        "YOUR_ADMIN_UID"
+        "vgW29wAqLeTATkfgq6iGj0agpBT2"
       ];
     }
 

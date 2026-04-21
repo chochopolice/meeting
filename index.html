@@ -106,6 +106,31 @@
     .reservation-item strong { display: block; font-size: 16px; }
     .reservation-item small { display: block; color: var(--muted); margin-top: 4px; }
     .reservation-item .row { display: flex; justify-content: space-between; gap: 12px; align-items: center; margin-top: 10px; flex-wrap: wrap; }
+    .wide-calendar { background: var(--card); border: 1px solid var(--line); border-radius: var(--radius); box-shadow: 0 8px 24px rgba(15,23,42,.04); padding: 24px; }
+    .calendar-toolbar { display: grid; grid-template-columns: 1fr auto auto auto; gap: 10px; align-items: end; margin-bottom: 16px; }
+    .calendar-toolbar .field { margin: 0; }
+    .calendar-summary { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin: 16px 0; }
+    .summary-card { padding: 14px; border: 1px solid var(--line); border-radius: 16px; background: #f8fafc; }
+    .summary-card span { display: block; color: var(--muted); font-size: 13px; font-weight: 700; }
+    .summary-card strong { display: block; font-size: 24px; line-height: 1.2; margin-top: 4px; }
+    .legend { display: flex; flex-wrap: wrap; gap: 10px; color: var(--muted); font-size: 13px; margin: 10px 0 18px; }
+    .legend span { display: inline-flex; align-items: center; gap: 6px; }
+    .legend span::before { content: ""; width: 13px; height: 13px; border-radius: 4px; border: 1px solid var(--line); display: inline-block; }
+    .legend .free::before { background: #ecfdf5; border-color: #bbf7d0; }
+    .legend .booked::before { background: #fef2f2; border-color: #fecaca; }
+    .legend .closed::before { background: #e2e8f0; border-color: #cbd5e1; }
+    .room-calendar-list { display: grid; gap: 14px; }
+    .room-calendar-card { border: 1px solid var(--line); border-radius: 18px; background: #fff; overflow: hidden; }
+    .room-calendar-title { display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 14px 16px; background: #f8fafc; border-bottom: 1px solid var(--line); }
+    .room-calendar-title strong { font-size: 16px; }
+    .room-calendar-title small { display: block; color: var(--muted); }
+    .hour-row { display: grid; grid-template-columns: repeat(24, minmax(54px, 1fr)); overflow-x: auto; }
+    .hour-cell { border: 0; border-right: 1px solid var(--line); min-height: 54px; padding: 7px 5px; font-size: 12px; font-weight: 900; text-align: center; background: #ecfdf5; color: #166534; cursor: pointer; }
+    .hour-cell:last-child { border-right: 0; }
+    .hour-cell:hover { outline: 3px solid rgba(37, 99, 235, .18); outline-offset: -3px; }
+    .hour-cell.booked { background: #fef2f2; color: #991b1b; cursor: not-allowed; }
+    .hour-cell.past { background: #e2e8f0; color: #64748b; cursor: not-allowed; }
+    .hour-cell small { display: block; font-weight: 700; opacity: .82; }
     .notice { background: #fffbeb; border: 1px solid #fde68a; border-radius: var(--radius); padding: 20px; color: #92400e; }
     footer { padding: 36px 0; border-top: 1px solid var(--line); color: var(--muted); text-align: center; font-size: 14px; }
     @media (max-width: 980px) {
@@ -114,9 +139,12 @@
       .hero { padding-top: 52px; }
       .room-list { grid-template-columns: repeat(3, 1fr); }
       .slots { grid-template-columns: repeat(3, 1fr); }
+      .calendar-toolbar, .calendar-summary { grid-template-columns: 1fr 1fr; }
+      .hour-row { grid-template-columns: repeat(24, 58px); }
     }
     @media (max-width: 640px) {
-      .room-list, .slots, .inline-grid, .auth-actions { grid-template-columns: 1fr; }
+      .room-list, .slots, .inline-grid, .auth-actions, .calendar-toolbar, .calendar-summary { grid-template-columns: 1fr; }
+      .wide-calendar { padding: 18px; }
     }
   </style>
 </head>
@@ -128,6 +156,7 @@
         <a href="#auth">ログイン</a>
         <a href="#rooms">会議室</a>
         <a href="#calendar">予約</a>
+        <a href="#availability">空き状況</a>
         <a href="#myreservations">予約履歴</a>
         <a class="btn" href="#calendar">予約する</a>
       </nav>
@@ -251,6 +280,33 @@
       </div>
     </section>
 
+    <section id="availability">
+      <div class="container">
+        <div class="section-title"><h2>全会議室の空き状況カレンダー</h2><p>選択した日付の25室分の予約状況を一覧表示します。空き枠をクリックすると、予約フォームへ会議室・日付・開始時間を反映できます。</p></div>
+        <div class="wide-calendar">
+          <div class="calendar-toolbar">
+            <div class="field"><label for="availabilityDate">表示日</label><input id="availabilityDate" type="date" /></div>
+            <button class="btn secondary small" id="prevDateBtn" type="button">前日</button>
+            <button class="btn secondary small" id="todayDateBtn" type="button">今日</button>
+            <button class="btn secondary small" id="nextDateBtn" type="button">翌日</button>
+          </div>
+          <div class="inline-grid">
+            <div class="field"><label for="availabilityType">会議室種別</label><select id="availabilityType"><option value="all">すべて</option><option value="large">大会議室</option><option value="medium">中会議室</option><option value="small">小会議室</option></select></div>
+            <div class="field"><label for="availabilityOnlyFree">表示条件</label><select id="availabilityOnlyFree"><option value="all">全会議室を表示</option><option value="free">空きがある会議室のみ表示</option></select></div>
+          </div>
+          <div class="calendar-summary">
+            <div class="summary-card"><span>表示中の会議室</span><strong id="summaryRoomCount">0</strong></div>
+            <div class="summary-card"><span>空き枠</span><strong id="summaryFreeSlots">0</strong></div>
+            <div class="summary-card"><span>予約済み枠</span><strong id="summaryBookedSlots">0</strong></div>
+            <div class="summary-card"><span>空き率</span><strong id="summaryFreeRate">0%</strong></div>
+          </div>
+          <div class="legend"><span class="free">空き</span><span class="booked">予約済み</span><span class="closed">過去時間</span></div>
+          <div id="availabilityMessage" class="status-box info">会議室マスタと予約状況を読み込み中です。</div>
+          <div id="roomCalendarList" class="room-calendar-list"><div class="empty-state">カレンダーを準備中です。</div></div>
+        </div>
+      </div>
+    </section>
+
     <section id="myreservations">
       <div class="container">
         <div class="section-title"><h2>自分の予約</h2><p>ログイン中ユーザーの予約を表示します。キャンセルすると、該当時間枠のロックも解除されます。</p></div>
@@ -360,6 +416,18 @@
     const heroRoomName = $('heroRoomName');
     const heroTimeRange = $('heroTimeRange');
     const heroAmount = $('heroAmount');
+    const availabilityDate = $('availabilityDate');
+    const availabilityType = $('availabilityType');
+    const availabilityOnlyFree = $('availabilityOnlyFree');
+    const prevDateBtn = $('prevDateBtn');
+    const todayDateBtn = $('todayDateBtn');
+    const nextDateBtn = $('nextDateBtn');
+    const availabilityMessage = $('availabilityMessage');
+    const roomCalendarList = $('roomCalendarList');
+    const summaryRoomCount = $('summaryRoomCount');
+    const summaryFreeSlots = $('summaryFreeSlots');
+    const summaryBookedSlots = $('summaryBookedSlots');
+    const summaryFreeRate = $('summaryFreeRate');
 
     let currentUser = null;
     let rooms = [];
@@ -368,6 +436,8 @@
     let unsubscribeSlots = null;
     let unsubscribeMyReservations = null;
     let currentDaySlots = new Map();
+    let unsubscribeAvailabilitySlots = null;
+    let availabilitySlots = new Map();
 
     const roomDefinitions = [
       ...Array.from({ length: 3 }, (_, i) => ({ id: `large-${String(i + 1).padStart(2, '0')}`, name: `大会議室${i + 1}`, type: 'large', typeLabel: '大', pricePerHour: 300, sortOrder: 100 + i + 1, active: true })),
@@ -419,6 +489,17 @@
       return `${roomId}_${dateString}`;
     }
 
+    function addDaysToDateString(dateString, days) {
+      const base = new Date(`${dateString}T00:00:00`);
+      base.setDate(base.getDate() + days);
+      return formatDateLocal(base);
+    }
+
+    function isPastSlot(dateString, hour) {
+      const slotStart = createLocalDate(dateString, hour);
+      return slotStart < new Date();
+    }
+
     function getSelectedRoom() {
       return roomMap.get(reservationRoom.value) || null;
     }
@@ -427,6 +508,8 @@
       const today = getTodayString();
       reservationDate.value = today;
       reservationDate.min = today;
+      availabilityDate.value = today;
+      availabilityDate.min = today;
 
       reservationStartHour.innerHTML = '';
       for (let h = 0; h <= 23; h += 1) {
@@ -648,6 +731,7 @@
         renderRooms();
         renderRoomOptions();
         updateReservationPreview();
+        subscribeAvailabilitySlots();
         setBox(roomsMessage, `会議室マスタを${rooms.length}件読み込みました。`, 'success');
       }, (error) => {
         setBox(roomsMessage, getFirestoreErrorMessage(error), 'error');
@@ -876,6 +960,128 @@
     });
 
     reloadMyReservationsBtn.addEventListener('click', subscribeMyReservations);
+
+    function getFilteredAvailabilityRooms() {
+      const type = availabilityType.value;
+      const onlyFree = availabilityOnlyFree.value === 'free';
+      let list = rooms.filter((room) => type === 'all' || room.type === type);
+      if (onlyFree) {
+        const date = availabilityDate.value;
+        list = list.filter((room) => {
+          for (let h = 0; h <= 23; h += 1) {
+            const slotId = buildSlotId(room.id, date, h);
+            if (!availabilitySlots.has(slotId) && !isPastSlot(date, h)) return true;
+          }
+          return false;
+        });
+      }
+      return list;
+    }
+
+    function subscribeAvailabilitySlots() {
+      const date = availabilityDate.value;
+      if (unsubscribeAvailabilitySlots) {
+        unsubscribeAvailabilitySlots();
+        unsubscribeAvailabilitySlots = null;
+      }
+      availabilitySlots = new Map();
+      if (!date) {
+        renderAvailabilityCalendar();
+        return;
+      }
+      const allSlotsQuery = query(collection(db, 'room_slots'), where('date', '==', date));
+      unsubscribeAvailabilitySlots = onSnapshot(allSlotsQuery, (snapshot) => {
+        availabilitySlots = new Map(snapshot.docs.map((docSnap) => [docSnap.id, docSnap.data()]));
+        renderAvailabilityCalendar();
+        setBox(availabilityMessage, `${date} の予約状況をリアルタイム表示中です。`, 'success');
+      }, (error) => {
+        setBox(availabilityMessage, getFirestoreErrorMessage(error), 'error');
+      });
+    }
+
+    function renderAvailabilityCalendar() {
+      const date = availabilityDate.value;
+      if (!date || !rooms.length) {
+        summaryRoomCount.textContent = '0';
+        summaryFreeSlots.textContent = '0';
+        summaryBookedSlots.textContent = '0';
+        summaryFreeRate.textContent = '0%';
+        roomCalendarList.innerHTML = '<div class="empty-state">会議室マスタ登録後にカレンダーを表示します。</div>';
+        return;
+      }
+
+      const filteredRooms = getFilteredAvailabilityRooms();
+      let freeSlots = 0;
+      let bookedSlots = 0;
+      let html = '';
+
+      for (const room of filteredRooms) {
+        let roomBooked = 0;
+        let roomFree = 0;
+        let cells = '';
+        for (let h = 0; h <= 23; h += 1) {
+          const slotId = buildSlotId(room.id, date, h);
+          const booked = availabilitySlots.has(slotId);
+          const past = !booked && isPastSlot(date, h);
+          if (booked) {
+            bookedSlots += 1;
+            roomBooked += 1;
+          } else if (!past) {
+            freeSlots += 1;
+            roomFree += 1;
+          }
+          const status = booked ? '予約済み' : (past ? '過去' : '空き');
+          const className = ['hour-cell', booked ? 'booked' : '', past ? 'past' : ''].filter(Boolean).join(' ');
+          const attrs = booked || past ? 'disabled aria-disabled="true"' : `data-pick-room="${room.id}" data-pick-date="${date}" data-pick-hour="${h}"`;
+          cells += `<button class="${className}" type="button" ${attrs}>${pad2(h)}:00<small>${status}</small></button>`;
+        }
+        html += `
+          <div class="room-calendar-card">
+            <div class="room-calendar-title">
+              <div><strong>${room.name}</strong><small>${room.typeLabel} / ${yen(room.pricePerHour)} / 時間</small></div>
+              <span class="pill ${roomFree > 0 ? 'success' : 'warn'}">空き${roomFree} / 予約${roomBooked}</span>
+            </div>
+            <div class="hour-row">${cells}</div>
+          </div>
+        `;
+      }
+
+      const totalUsableSlots = freeSlots + bookedSlots;
+      const freeRate = totalUsableSlots ? Math.round((freeSlots / totalUsableSlots) * 100) : 0;
+      summaryRoomCount.textContent = String(filteredRooms.length);
+      summaryFreeSlots.textContent = String(freeSlots);
+      summaryBookedSlots.textContent = String(bookedSlots);
+      summaryFreeRate.textContent = `${freeRate}%`;
+      roomCalendarList.innerHTML = html || '<div class="empty-state">条件に合う会議室がありません。</div>';
+    }
+
+    roomCalendarList.addEventListener('click', (event) => {
+      const button = event.target.closest('[data-pick-room]');
+      if (!button) return;
+      reservationRoom.value = button.dataset.pickRoom;
+      reservationDate.value = button.dataset.pickDate;
+      reservationStartHour.value = String(Number(button.dataset.pickHour));
+      reservationHours.value = '1';
+      updateReservationPreview();
+      setBox(reservationMessage, '空き状況カレンダーから予約フォームへ反映しました。利用時間を確認して「予約する」を押してください。', 'success');
+      location.hash = '#calendar';
+    });
+
+    availabilityDate.addEventListener('change', subscribeAvailabilitySlots);
+    availabilityType.addEventListener('change', renderAvailabilityCalendar);
+    availabilityOnlyFree.addEventListener('change', renderAvailabilityCalendar);
+    prevDateBtn.addEventListener('click', () => {
+      availabilityDate.value = addDaysToDateString(availabilityDate.value || getTodayString(), -1);
+      subscribeAvailabilitySlots();
+    });
+    todayDateBtn.addEventListener('click', () => {
+      availabilityDate.value = getTodayString();
+      subscribeAvailabilitySlots();
+    });
+    nextDateBtn.addEventListener('click', () => {
+      availabilityDate.value = addDaysToDateString(availabilityDate.value || getTodayString(), 1);
+      subscribeAvailabilitySlots();
+    });
 
     setDefaultInputs();
     subscribeRooms();
