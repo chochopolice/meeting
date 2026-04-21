@@ -8,63 +8,23 @@ service cloud.firestore {
     }
 
     function isAdmin() {
-      return isSignedIn()
+      return request.auth != null
         && request.auth.uid == "vgW29wAqLeTATkfgq6iGj0agpBT2";
-    }
-
-    function isValidHour(hour) {
-      return hour >= 0 && hour <= 23;
-    }
-
-    function isValidHours(hours) {
-      return hours >= 1 && hours <= 24;
-    }
-
-    function keepsReservationOwner() {
-      return request.resource.data.userId == resource.data.userId;
-    }
-
-    function keepsReservationCore() {
-      return request.resource.data.userId == resource.data.userId
-        && request.resource.data.userEmail == resource.data.userEmail
-        && request.resource.data.roomId == resource.data.roomId
-        && request.resource.data.roomName == resource.data.roomName
-        && request.resource.data.roomType == resource.data.roomType
-        && request.resource.data.roomTypeLabel == resource.data.roomTypeLabel
-        && request.resource.data.pricePerHour == resource.data.pricePerHour
-        && request.resource.data.startAt == resource.data.startAt
-        && request.resource.data.endAt == resource.data.endAt
-        && request.resource.data.startDate == resource.data.startDate
-        && request.resource.data.endDate == resource.data.endDate
-        && request.resource.data.startHour == resource.data.startHour
-        && request.resource.data.hours == resource.data.hours
-        && request.resource.data.amount == resource.data.amount;
     }
 
     match /rooms/{roomId} {
       allow read: if true;
-
-      allow create, update: if isAdmin()
-        && request.resource.data.name is string
-        && request.resource.data.type in ["large", "medium", "small"]
-        && request.resource.data.typeLabel in ["大", "中", "小"]
-        && request.resource.data.pricePerHour in [100, 200, 300]
-        && request.resource.data.active is bool;
-
+      allow create: if isAdmin();
+      allow update: if isAdmin();
       allow delete: if isAdmin();
     }
 
     match /reservations/{reservationId} {
       allow create: if isSignedIn()
         && request.resource.data.userId == request.auth.uid
-        && request.resource.data.roomId is string
-        && request.resource.data.roomName is string
-        && request.resource.data.roomType in ["large", "medium", "small"]
-        && request.resource.data.roomTypeLabel in ["大", "中", "小"]
-        && request.resource.data.pricePerHour in [100, 200, 300]
-        && isValidHours(request.resource.data.hours)
-        && request.resource.data.amount >= 100
-        && request.resource.data.status == "reserved";
+        && request.resource.data.status == "reserved"
+        && request.resource.data.hours >= 1
+        && request.resource.data.hours <= 24;
 
       allow read: if isSignedIn()
         && (
@@ -76,10 +36,8 @@ service cloud.firestore {
         || (
           isSignedIn()
           && resource.data.userId == request.auth.uid
-          && resource.data.status == "reserved"
+          && request.resource.data.userId == resource.data.userId
           && request.resource.data.status == "cancelled"
-          && keepsReservationOwner()
-          && keepsReservationCore()
         );
 
       allow delete: if isAdmin();
@@ -93,20 +51,11 @@ service cloud.firestore {
           isAdmin()
           || request.resource.data.userId == request.auth.uid
         )
-        && request.resource.data.roomId is string
-        && request.resource.data.date is string
-        && isValidHour(request.resource.data.hour)
-        && request.resource.data.reservationId is string
-        && request.resource.data.userId is string
-        && request.resource.data.status == "reserved";
+        && request.resource.data.status == "reserved"
+        && request.resource.data.hour >= 0
+        && request.resource.data.hour <= 23;
 
-      allow update: if isAdmin()
-        && request.resource.data.roomId is string
-        && request.resource.data.date is string
-        && isValidHour(request.resource.data.hour)
-        && request.resource.data.reservationId is string
-        && request.resource.data.userId is string
-        && request.resource.data.status == "reserved";
+      allow update: if isAdmin();
 
       allow delete: if isAdmin()
         || (
@@ -116,11 +65,15 @@ service cloud.firestore {
     }
 
     match /admin_logs/{logId} {
-      allow read, write: if isAdmin();
+      allow read: if isAdmin();
+      allow create: if isAdmin();
+      allow update: if isAdmin();
+      allow delete: if isAdmin();
     }
 
     match /{document=**} {
-      allow read, write: if false;
+      allow read: if false;
+      allow write: if false;
     }
   }
 }

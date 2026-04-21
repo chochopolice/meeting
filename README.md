@@ -1,16 +1,12 @@
-# レンタル会議室予約システム
+# レンタル会議室予約システム UI改善版
 
-GitHub Pages + Firebase Authentication + Cloud Firestore で動作するレンタル会議室予約システムです。
+GitHub Pages + Firebase Authentication + Cloud Firestoreで動作するレンタル会議室予約システムです。
 
-## 今回の版
+## 今回の主な変更
 
-- 操作ログ・履歴表示を追加
-- 管理者操作ログ一覧
-- 予約番号による履歴絞り込み
-- 操作ログのタブ区切りコピー
-
-## 反映方法
-
-`index.html`、`firestore.rules`、`README.md`、`.nojekyll` をGitHubリポジトリ直下へ配置してください。
-
-FirestoreのルールはFirebase Consoleの Firestore Database > ルール に貼り付けて公開してください。
+- 予約手順のステップ表示を追加
+- 会議室クイック選択ボタンを追加
+- 予約内容サマリーを追加
+- スマホ向け下部ナビゲーションを追加
+- スマホでの入力欄・ボタンサイズを改善
+- Firestore Rulesは前回公開できたシンプル強化版を同梱
