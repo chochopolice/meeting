@@ -1,46 +1,43 @@
 # レンタル会議室予約システム
 
-GitHub Pages + Firebase Authentication で動く、レンタル会議室予約サイトの初期版です。
+GitHub Pages + Firebase で作るレンタル会議室予約システムのMVPです。
 
-## 現在できること
+## 今回の状態
 
-- トップページ表示
-- 会議室料金表示
-- 予約フォームのデモ表示
-- Firebase Authentication による会員登録
-- Firebase Authentication によるログイン
-- ログアウト
-- ログイン状態の画面反映
+- GitHub Pages用の静的サイト
+- Firebase Authenticationによる会員登録・ログイン・ログアウト
+- Cloud Firestore接続
+- rooms コレクションへの会議室マスタ登録/更新
+- Firestoreからの会議室マスタ読み込み
 
-## まだ未実装のこと
+## ファイル
 
-- Firestore への会議室マスタ登録
-- Firestore への予約登録
-- 二重予約防止
-- 会議室ごとのリアルタイムカレンダー
-- マイページ
-- 管理者画面
+- `index.html`：サイト本体
+- `.nojekyll`：GitHub Pages用
+- `firestore.rules`：Firestore Security Rulesのサンプル
 
-## GitHub Pages への反映
+## Firestore Security Rules設定
 
-1. このフォルダの `index.html`、`README.md`、`.nojekyll` をリポジトリ直下へアップロードします。
-2. GitHub の `Settings` → `Pages` を開きます。
-3. Source を `Deploy from a branch` にします。
-4. Branch を `main`、フォルダを `/ (root)` にします。
-5. 数分後に公開URLへアクセスします。
+1. GitHub Pagesに `index.html` を反映する
+2. サイトでログインする
+3. 画面の「UID」をコピーする
+4. Firebase Console → Firestore Database → ルール を開く
+5. `firestore.rules` の内容を貼り付ける
+6. `YOUR_ADMIN_UID` をコピーしたUIDに置き換える
+7. 公開する
+8. サイトの「会議室マスタを登録/更新」を押す
 
-## Firebase Authentication の注意
+## 登録される会議室
 
-GitHub Pages のURLでログインエラーが出る場合は、Firebase Consoleで以下を確認してください。
+- 大会議室：3室、300円/時間
+- 中会議室：7室、200円/時間
+- 小会議室：15室、100円/時間
 
-Authentication → Settings → Authorized domains
+合計25室です。
 
-ここに GitHub Pages のドメインを追加します。
+## 次工程
 
-例：
-
-- chochopolice.github.io
-
-## 次の工程
-
-次は Cloud Firestore を接続し、会議室マスタと予約登録機能を追加します。
+- 予約登録機能
+- 二重予約防止用の room_slots コレクション
+- マイページの予約一覧
+- 管理者による予約変更・削除・上書き

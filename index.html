@@ -347,6 +347,77 @@
     .user-panel strong { display: block; }
     .user-panel small { color: #15803d; }
 
+    .code-chip {
+      display: inline-block;
+      max-width: 100%;
+      margin-top: 6px;
+      padding: 6px 8px;
+      border-radius: 10px;
+      background: rgba(255, 255, 255, 0.72);
+      color: #166534;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      font-size: 11px;
+      word-break: break-all;
+    }
+
+    .master-panel {
+      margin-top: 24px;
+      padding: 24px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: var(--card);
+      box-shadow: var(--shadow);
+    }
+
+    .master-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 16px;
+      flex-wrap: wrap;
+      margin-bottom: 18px;
+    }
+
+    .master-head h3 { margin: 0 0 6px; font-size: 24px; }
+    .master-head p { margin: 0; color: var(--muted); }
+
+    .room-list {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 10px;
+      margin-top: 18px;
+    }
+
+    .room-master-card {
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      padding: 13px;
+      background: #f8fafc;
+    }
+
+    .room-master-card strong {
+      display: block;
+      margin-bottom: 4px;
+      font-size: 14px;
+    }
+
+    .room-master-card span {
+      display: block;
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .empty-state {
+      grid-column: 1 / -1;
+      border: 1px dashed #cbd5e1;
+      border-radius: 18px;
+      padding: 20px;
+      color: var(--muted);
+      text-align: center;
+      background: #f8fafc;
+    }
+
+
     .calendar-wrap {
       display: grid;
       grid-template-columns: 0.85fr 1.15fr;
@@ -482,7 +553,9 @@
       .nav-links { display: none; }
       .hero { padding-top: 52px; }
       .slots { grid-template-columns: repeat(2, 1fr); }
+      .room-list { grid-template-columns: repeat(2, 1fr); }
       .auth-actions { grid-template-columns: 1fr; }
+      .room-list { grid-template-columns: 1fr; }
     }
   </style>
 </head>
@@ -547,7 +620,7 @@
       <div class="container">
         <div class="section-title">
           <h2>会員登録・ログイン</h2>
-          <p>メールアドレスとパスワードで会員登録・ログインできます。予約登録機能は次の工程でFirestoreに接続します。</p>
+          <p>メールアドレスとパスワードで会員登録・ログインできます。今回はFirestoreの会議室マスタ登録まで進めます。</p>
         </div>
 
         <div class="auth-grid">
@@ -585,6 +658,7 @@
               <div>
                 <strong>ログイン中</strong>
                 <small id="currentUserEmail">-</small>
+                <span class="code-chip" id="currentUserUid">UID: -</span>
               </div>
               <button class="btn danger" id="logoutBtn" type="button">ログアウト</button>
             </div>
@@ -615,7 +689,7 @@
             <ul class="features">
               <li>大人数の会議やセミナー向け</li>
               <li>最大24時間まで予約可能</li>
-              <li>次工程でFirestore予約DBに接続</li>
+              <li>Firestoreのroomsコレクションに登録</li>
             </ul>
           </article>
 
@@ -628,7 +702,7 @@
             <ul class="features">
               <li>通常会議や打ち合わせ向け</li>
               <li>コストと広さのバランスが良い</li>
-              <li>会員ログイン後に予約可能</li>
+              <li>Firestoreのroomsコレクションに登録</li>
             </ul>
           </article>
 
@@ -644,6 +718,20 @@
               <li>24時間365日貸し出し対象</li>
             </ul>
           </article>
+        </div>
+
+        <div class="master-panel">
+          <div class="master-head">
+            <div>
+              <h3>Firestore会議室マスタ</h3>
+              <p>Firestoreの <strong>rooms</strong> コレクションから会議室一覧を読み込みます。</p>
+            </div>
+            <button class="btn" id="seedRoomsBtn" type="button">会議室マスタを登録/更新</button>
+          </div>
+          <div id="roomsMessage" class="status-box info">Firestore接続待ちです。ログイン後、管理者UIDをSecurity Rulesに設定してから登録してください。</div>
+          <div id="roomList" class="room-list">
+            <div class="empty-state">会議室マスタを読み込み中です。</div>
+          </div>
         </div>
       </div>
     </section>
@@ -776,7 +864,7 @@
 
         <div class="notice" style="margin-top: 24px;">
           <strong>開発メモ：</strong>
-          今回はFirebase Authenticationまで接続済みです。次の工程でCloud Firestoreを接続し、会議室マスタ・予約登録・リアルタイムカレンダー反映を実装します。
+          今回はCloud Firestoreへ接続し、会議室マスタを登録・読み込みできる状態です。次の工程で予約登録と二重予約防止を実装します。
         </div>
       </div>
     </section>
@@ -797,6 +885,16 @@
       signOut,
       onAuthStateChanged
     } from "https://www.gstatic.com/firebasejs/12.12.0/firebase-auth.js";
+    import {
+      getFirestore,
+      collection,
+      doc,
+      writeBatch,
+      serverTimestamp,
+      onSnapshot,
+      query,
+      orderBy
+    } from "https://www.gstatic.com/firebasejs/12.12.0/firebase-firestore.js";
 
     const firebaseConfig = {
       apiKey: "AIzaSyAGXOWh2K64S1VB1ZebWxyw3c0J3lNObqo",
@@ -810,6 +908,7 @@
 
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
+    const db = getFirestore(app);
 
     const roomType = document.getElementById('roomType');
     const hours = document.getElementById('hours');
@@ -826,6 +925,10 @@
     const currentUserEmail = document.getElementById('currentUserEmail');
     const heroLoginStatus = document.getElementById('heroLoginStatus');
     const reserveDemoBtn = document.getElementById('reserveDemoBtn');
+    const currentUserUid = document.getElementById('currentUserUid');
+    const seedRoomsBtn = document.getElementById('seedRoomsBtn');
+    const roomsMessage = document.getElementById('roomsMessage');
+    const roomList = document.getElementById('roomList');
 
     let currentUser = null;
 
@@ -844,6 +947,114 @@
       const usageHours = Number(hours.value || 0);
       totalAmount.textContent = `${(price * usageHours).toLocaleString('ja-JP')}円`;
     }
+
+    const roomMasters = [
+      ...Array.from({ length: 3 }, (_, index) => ({
+        id: `large-${String(index + 1).padStart(2, '0')}`,
+        name: `大会議室${index + 1}`,
+        type: 'large',
+        typeLabel: '大',
+        pricePerHour: 300,
+        sortOrder: 100 + index + 1,
+        active: true
+      })),
+      ...Array.from({ length: 7 }, (_, index) => ({
+        id: `medium-${String(index + 1).padStart(2, '0')}`,
+        name: `中会議室${index + 1}`,
+        type: 'medium',
+        typeLabel: '中',
+        pricePerHour: 200,
+        sortOrder: 200 + index + 1,
+        active: true
+      })),
+      ...Array.from({ length: 15 }, (_, index) => ({
+        id: `small-${String(index + 1).padStart(2, '0')}`,
+        name: `小会議室${index + 1}`,
+        type: 'small',
+        typeLabel: '小',
+        pricePerHour: 100,
+        sortOrder: 300 + index + 1,
+        active: true
+      }))
+    ];
+
+    function setRoomsMessage(message, type = 'info') {
+      roomsMessage.textContent = message;
+      roomsMessage.className = `status-box ${type}`;
+    }
+
+    function renderRooms(rooms) {
+      if (!rooms.length) {
+        roomList.innerHTML = '<div class="empty-state">まだ会議室マスタが登録されていません。管理者でログインして登録ボタンを押してください。</div>';
+        return;
+      }
+
+      roomList.innerHTML = rooms.map((room) => `
+        <div class="room-master-card">
+          <strong>${room.name}</strong>
+          <span>${room.typeLabel} / ${Number(room.pricePerHour).toLocaleString('ja-JP')}円・1時間</span>
+          <span>ID: ${room.id}</span>
+        </div>
+      `).join('');
+    }
+
+    function getFirestoreErrorMessage(error) {
+      const code = error?.code || '';
+      const messages = {
+        'permission-denied': 'Firestore Security Rulesで権限が拒否されました。管理者UIDの設定を確認してください。',
+        'unavailable': 'Firestoreに接続できませんでした。ネットワーク状態を確認してください。',
+        'failed-precondition': 'Firestoreの設定またはインデックスが不足しています。Firebase Consoleを確認してください。'
+      };
+      return messages[code] || `Firestoreエラー：${error.message || code}`;
+    }
+
+    async function seedRooms() {
+      if (!currentUser) {
+        location.hash = '#auth';
+        setRoomsMessage('会議室マスタ登録にはログインが必要です。先にログインしてください。', 'error');
+        return;
+      }
+
+      try {
+        seedRoomsBtn.disabled = true;
+        setRoomsMessage('会議室マスタをFirestoreへ登録中です...', 'info');
+        const batch = writeBatch(db);
+        roomMasters.forEach((room) => {
+          const roomRef = doc(db, 'rooms', room.id);
+          batch.set(roomRef, {
+            ...room,
+            updatedAt: serverTimestamp(),
+            updatedBy: currentUser.uid
+          }, { merge: true });
+        });
+        await batch.commit();
+        setRoomsMessage(`会議室マスタ${roomMasters.length}件を登録/更新しました。`, 'success');
+      } catch (error) {
+        setRoomsMessage(getFirestoreErrorMessage(error), 'error');
+      } finally {
+        seedRoomsBtn.disabled = false;
+      }
+    }
+
+    function listenRooms() {
+      const roomsQuery = query(collection(db, 'rooms'), orderBy('sortOrder', 'asc'));
+      onSnapshot(roomsQuery, (snapshot) => {
+        const rooms = snapshot.docs.map((documentSnapshot) => ({
+          id: documentSnapshot.id,
+          ...documentSnapshot.data()
+        }));
+        renderRooms(rooms);
+        if (rooms.length > 0) {
+          setRoomsMessage(`Firestoreから会議室マスタ${rooms.length}件を読み込みました。`, 'success');
+        } else {
+          setRoomsMessage('Firestoreに会議室マスタが未登録です。管理者で登録してください。', 'info');
+        }
+      }, (error) => {
+        renderRooms([]);
+        setRoomsMessage(getFirestoreErrorMessage(error), 'error');
+      });
+    }
+
 
     function setMessage(message, type = 'info') {
       authMessage.textContent = message;
@@ -920,6 +1131,7 @@
         guestPanel.style.display = 'none';
         userPanel.style.display = 'flex';
         currentUserEmail.textContent = user.email || user.uid;
+        currentUserUid.textContent = `UID: ${user.uid}`;
         heroLoginStatus.textContent = 'ログイン中';
         heroLoginStatus.style.color = 'var(--success)';
         reserveDemoBtn.textContent = '予約へ進む：次工程でDB登録を実装';
@@ -927,6 +1139,7 @@
         guestPanel.style.display = 'block';
         userPanel.style.display = 'none';
         currentUserEmail.textContent = '-';
+        currentUserUid.textContent = 'UID: -';
         heroLoginStatus.textContent = '未ログイン';
         heroLoginStatus.style.color = 'var(--warning)';
         reserveDemoBtn.textContent = 'ログイン後に予約へ進む';
@@ -939,13 +1152,15 @@
         setMessage('予約するには、先に会員登録またはログインしてください。', 'error');
         return;
       }
-      alert('ログイン確認OKです。次工程でFirestoreに予約データを登録します。');
+      alert('ログイン確認OKです。次工程で予約データ登録と二重予約防止を実装します。');
     });
 
+    seedRoomsBtn.addEventListener('click', seedRooms);
     roomType.addEventListener('change', calculateTotal);
     hours.addEventListener('change', calculateTotal);
     setToday();
     calculateTotal();
+    listenRooms();
   </script>
 </body>
 </html>
