@@ -1032,8 +1032,11 @@
               date: item.slot.date,
               hour: item.slot.hour,
               reservationId,
+              userId: currentUser.uid,
+              userEmail: currentUser.email || '',
               status: 'reserved',
-              createdAt: serverTimestamp()
+              createdAt: serverTimestamp(),
+              createdBy: currentUser.uid
             });
           }
         });
@@ -1483,6 +1486,8 @@
               date: item.slot.date,
               hour: item.slot.hour,
               reservationId: selectedAdminReservation.id,
+              userId: current.userId || '',
+              userEmail: current.userEmail || '',
               status: 'reserved',
               updatedAt: serverTimestamp(),
               updatedBy: currentUser.uid
@@ -1621,6 +1626,8 @@
               date: item.slot.date,
               hour: item.slot.hour,
               reservationId,
+              userId: currentUser.uid,
+              userEmail: currentUser.email || '',
               status: 'reserved',
               createdAt: serverTimestamp(),
               createdBy: currentUser.uid
