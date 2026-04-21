@@ -139,11 +139,25 @@
       .hero { padding-top: 52px; }
       .room-list { grid-template-columns: repeat(3, 1fr); }
       .slots { grid-template-columns: repeat(3, 1fr); }
-      .calendar-toolbar, .calendar-summary { grid-template-columns: 1fr 1fr; }
+      .calendar-toolbar, .calendar-summary, .admin-controls, .admin-edit-grid { grid-template-columns: 1fr 1fr; }
       .hour-row { grid-template-columns: repeat(24, 58px); }
     }
+    article:first-child .pill { font-size: 16px; padding: 8px 14px; }
+    .admin-panel { display: none; }
+    .admin-layout { display: grid; grid-template-columns: 1fr; gap: 18px; }
+    .admin-controls { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; align-items: end; }
+    .admin-controls .field { margin: 0; }
+    .admin-reservation-list { display: grid; gap: 12px; margin-top: 16px; }
+    .admin-reservation-card { border: 1px solid var(--line); border-radius: 16px; padding: 16px; background: #fff; }
+    .admin-reservation-card.is-selected { outline: 3px solid rgba(37, 99, 235, .2); border-color: var(--primary); }
+    .admin-reservation-card strong { display: block; font-size: 16px; }
+    .admin-reservation-card small { display: block; color: var(--muted); margin-top: 4px; }
+    .admin-edit-grid { display: grid; grid-template-columns: 1.2fr .8fr; gap: 18px; align-items: start; }
+    .admin-action-row { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 12px; }
+    .danger-zone { border: 1px solid #fecaca; background: #fef2f2; border-radius: 18px; padding: 16px; }
+    .danger-zone h4 { margin: 0 0 8px; color: #991b1b; }
     @media (max-width: 640px) {
-      .room-list, .slots, .inline-grid, .auth-actions, .calendar-toolbar, .calendar-summary { grid-template-columns: 1fr; }
+      .room-list, .slots, .inline-grid, .auth-actions, .calendar-toolbar, .calendar-summary, .admin-controls, .admin-edit-grid { grid-template-columns: 1fr; }
       .wide-calendar { padding: 18px; }
     }
   </style>
@@ -158,6 +172,7 @@
         <a href="#calendar">予約</a>
         <a href="#availability">空き状況</a>
         <a href="#myreservations">予約履歴</a>
+        <a href="#admin">管理</a>
         <a class="btn" href="#calendar">予約する</a>
       </nav>
     </div>
@@ -238,14 +253,6 @@
           <article class="card"><div class="room-type"><h3>中会議室</h3><span class="pill">7室</span></div><p class="price">200円 <span>/ 1時間</span></p><ul class="features"><li>通常会議や打ち合わせ向け</li><li>コストと広さのバランスが良い</li><li>room_slotsで時間枠をロック</li></ul></article>
           <article class="card"><div class="room-type"><h3>小会議室</h3><span class="pill">15室</span></div><p class="price">100円 <span>/ 1時間</span></p><ul class="features"><li>少人数利用や個人作業向け</li><li>最も低価格で利用可能</li><li>24時間365日貸し出し対象</li></ul></article>
         </div>
-        <div class="master-panel">
-          <div class="master-head">
-            <div><h3>Firestore会議室マスタ</h3><p>Firestoreの <strong>rooms</strong> コレクションから会議室一覧を読み込みます。</p></div>
-            <button class="btn" id="seedRoomsBtn" type="button">会議室マスタを登録/更新</button>
-          </div>
-          <div id="roomsMessage" class="status-box info">会議室マスタを読み込み中です。</div>
-          <div id="roomList" class="room-list"><div class="empty-state">会議室マスタを読み込み中です。</div></div>
-        </div>
       </div>
     </section>
 
@@ -323,11 +330,78 @@
 
     <section id="admin">
       <div class="container">
-        <div class="section-title"><h2>管理者機能予定</h2><p>次工程以降で、管理者による予約の変更・削除・緊急上書き・操作ログを追加します。</p></div>
-        <div class="admin-grid">
-          <article class="admin-item"><h3>予約上書き</h3><p>緊急メンテナンスやトラブル時に、管理者が既存予約を上書きできるようにします。</p></article>
-          <article class="admin-item"><h3>予約変更・削除</h3><p>利用者からの問い合わせに応じて、管理者が予約情報を変更・削除できるようにします。</p></article>
-          <article class="admin-item"><h3>操作ログ</h3><p>上書き・変更・削除の履歴を残し、後から確認できるようにします。</p></article>
+        <div class="section-title"><h2>管理者画面</h2><p>管理者は予約一覧の確認、予約変更、キャンセル、緊急上書き、会議室マスタ登録を行えます。</p></div>
+
+        <div id="adminGate" class="notice">管理者としてログインすると、管理機能が表示されます。</div>
+
+        <div id="adminPanel" class="admin-panel admin-layout">
+          <div class="master-panel">
+            <div class="master-head">
+              <div><h3>会議室マスタ管理</h3><p>Firestoreの <strong>rooms</strong> コレクションに25室分の会議室マスタを登録・更新します。</p></div>
+              <button class="btn" id="seedRoomsBtn" type="button">会議室マスタを登録/更新</button>
+            </div>
+            <div id="roomsMessage" class="status-box info">会議室マスタを読み込み中です。</div>
+            <div id="roomList" class="room-list"><div class="empty-state">会議室マスタを読み込み中です。</div></div>
+          </div>
+
+          <div class="history-card">
+            <div class="calendar-head">
+              <div>
+                <h3>全予約一覧</h3>
+                <p style="margin:4px 0 0;color:var(--muted);">条件を指定して、ユーザーの予約を確認できます。</p>
+              </div>
+              <button class="btn secondary small" id="reloadAdminReservationsBtn" type="button">再読み込み</button>
+            </div>
+            <div class="admin-controls">
+              <div class="field"><label for="adminFilterDate">利用日</label><input id="adminFilterDate" type="date" /></div>
+              <div class="field"><label for="adminFilterRoom">会議室</label><select id="adminFilterRoom"><option value="all">すべて</option></select></div>
+              <div class="field"><label for="adminFilterStatus">状態</label><select id="adminFilterStatus"><option value="all">すべて</option><option value="reserved">予約中</option><option value="cancelled">キャンセル済み</option><option value="cancelled_by_admin">管理者キャンセル</option><option value="overwritten">上書き済み</option></select></div>
+              <div class="field"><label for="adminFilterKeyword">メール/予約番号</label><input id="adminFilterKeyword" type="search" placeholder="検索キーワード" /></div>
+            </div>
+            <div id="adminReservationsMessage" class="status-box info">管理者ログイン後に予約一覧を表示します。</div>
+            <div id="adminReservationsList" class="admin-reservation-list"><div class="empty-state">予約一覧はまだ読み込まれていません。</div></div>
+          </div>
+
+          <div class="history-card">
+            <div class="calendar-head"><h3>選択予約の変更・削除</h3><span class="pill" id="adminSelectedReservationLabel">未選択</span></div>
+            <div class="admin-edit-grid">
+              <div>
+                <div class="field"><label for="adminEditRoom">変更後の会議室</label><select id="adminEditRoom"><option value="">会議室を選択</option></select></div>
+                <div class="inline-grid">
+                  <div class="field"><label for="adminEditDate">変更後の利用開始日</label><input id="adminEditDate" type="date" /></div>
+                  <div class="field"><label for="adminEditStartHour">変更後の開始時間</label><select id="adminEditStartHour"></select></div>
+                </div>
+                <div class="field"><label for="adminEditHours">変更後の利用時間</label><select id="adminEditHours"></select></div>
+                <div class="field"><label for="adminEditReason">変更理由</label><input id="adminEditReason" type="text" placeholder="例：利用者依頼のため" /></div>
+                <div class="total"><span>変更後の料金</span><span id="adminEditAmount">0円</span></div>
+                <div class="admin-action-row">
+                  <button class="btn" id="adminUpdateReservationBtn" type="button">予約を変更</button>
+                  <button class="btn danger" id="adminCancelReservationBtn" type="button">予約をキャンセル</button>
+                </div>
+              </div>
+              <div class="danger-zone">
+                <h4>操作時の注意</h4>
+                <p>変更・キャンセルを行うと、予約データと時間枠ロックを同時に更新します。操作ログにも記録されます。</p>
+                <p>既存予約と時間が重なる場合は、通常の変更では登録できません。緊急時は下の上書き機能を使います。</p>
+              </div>
+            </div>
+            <div id="adminEditMessage" class="status-box info">予約一覧から対象予約を選択してください。</div>
+          </div>
+
+          <div class="history-card">
+            <div class="calendar-head"><h3>緊急上書き予約</h3><span class="pill warn">管理者専用</span></div>
+            <p style="color:var(--muted);margin-top:0;">指定枠に既存予約がある場合、既存予約を「上書き済み」に変更し、管理者予約を作成します。</p>
+            <div class="admin-controls">
+              <div class="field"><label for="adminOverwriteRoom">会議室</label><select id="adminOverwriteRoom"><option value="">会議室を選択</option></select></div>
+              <div class="field"><label for="adminOverwriteDate">利用開始日</label><input id="adminOverwriteDate" type="date" /></div>
+              <div class="field"><label for="adminOverwriteStartHour">開始時間</label><select id="adminOverwriteStartHour"></select></div>
+              <div class="field"><label for="adminOverwriteHours">利用時間</label><select id="adminOverwriteHours"></select></div>
+            </div>
+            <div class="field"><label for="adminOverwriteReason">上書き理由</label><input id="adminOverwriteReason" type="text" placeholder="例：緊急メンテナンスのため" /></div>
+            <div class="total"><span>上書き予約の料金</span><span id="adminOverwriteAmount">0円</span></div>
+            <button class="btn danger" id="adminOverwriteReservationBtn" type="button">緊急上書き予約を作成</button>
+            <div id="adminOverwriteMessage" class="status-box info">緊急時のみ使用してください。</div>
+          </div>
         </div>
       </div>
     </section>
@@ -376,6 +450,7 @@
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
     const db = getFirestore(app);
+    const ADMIN_UID = "vgW29wAqLeTATkfgq6iGj0agpBT2";
 
     const $ = (id) => document.getElementById(id);
 
@@ -429,6 +504,34 @@
     const summaryBookedSlots = $('summaryBookedSlots');
     const summaryFreeRate = $('summaryFreeRate');
 
+    const adminGate = $('adminGate');
+    const adminPanel = $('adminPanel');
+    const reloadAdminReservationsBtn = $('reloadAdminReservationsBtn');
+    const adminFilterDate = $('adminFilterDate');
+    const adminFilterRoom = $('adminFilterRoom');
+    const adminFilterStatus = $('adminFilterStatus');
+    const adminFilterKeyword = $('adminFilterKeyword');
+    const adminReservationsMessage = $('adminReservationsMessage');
+    const adminReservationsList = $('adminReservationsList');
+    const adminSelectedReservationLabel = $('adminSelectedReservationLabel');
+    const adminEditRoom = $('adminEditRoom');
+    const adminEditDate = $('adminEditDate');
+    const adminEditStartHour = $('adminEditStartHour');
+    const adminEditHours = $('adminEditHours');
+    const adminEditReason = $('adminEditReason');
+    const adminEditAmount = $('adminEditAmount');
+    const adminUpdateReservationBtn = $('adminUpdateReservationBtn');
+    const adminCancelReservationBtn = $('adminCancelReservationBtn');
+    const adminEditMessage = $('adminEditMessage');
+    const adminOverwriteRoom = $('adminOverwriteRoom');
+    const adminOverwriteDate = $('adminOverwriteDate');
+    const adminOverwriteStartHour = $('adminOverwriteStartHour');
+    const adminOverwriteHours = $('adminOverwriteHours');
+    const adminOverwriteReason = $('adminOverwriteReason');
+    const adminOverwriteAmount = $('adminOverwriteAmount');
+    const adminOverwriteReservationBtn = $('adminOverwriteReservationBtn');
+    const adminOverwriteMessage = $('adminOverwriteMessage');
+
     let currentUser = null;
     let rooms = [];
     let roomMap = new Map();
@@ -438,6 +541,9 @@
     let currentDaySlots = new Map();
     let unsubscribeAvailabilitySlots = null;
     let availabilitySlots = new Map();
+    let unsubscribeAdminReservations = null;
+    let adminReservations = [];
+    let selectedAdminReservation = null;
 
     const roomDefinitions = [
       ...Array.from({ length: 3 }, (_, i) => ({ id: `large-${String(i + 1).padStart(2, '0')}`, name: `大会議室${i + 1}`, type: 'large', typeLabel: '大', pricePerHour: 300, sortOrder: 100 + i + 1, active: true })),
@@ -504,6 +610,32 @@
       return roomMap.get(reservationRoom.value) || null;
     }
 
+    function isCurrentUserAdmin() {
+      return !!currentUser && currentUser.uid === ADMIN_UID;
+    }
+
+    function fillHourSelect(selectEl, defaultHour = 10) {
+      selectEl.innerHTML = '';
+      for (let h = 0; h <= 23; h += 1) {
+        const option = document.createElement('option');
+        option.value = String(h);
+        option.textContent = `${pad2(h)}:00`;
+        if (h === defaultHour) option.selected = true;
+        selectEl.appendChild(option);
+      }
+    }
+
+    function fillHoursSelect(selectEl, defaultHours = 1) {
+      selectEl.innerHTML = '';
+      for (let h = 1; h <= 24; h += 1) {
+        const option = document.createElement('option');
+        option.value = String(h);
+        option.textContent = `${h}時間`;
+        if (h === defaultHours) option.selected = true;
+        selectEl.appendChild(option);
+      }
+    }
+
     function setDefaultInputs() {
       const today = getTodayString();
       reservationDate.value = today;
@@ -511,15 +643,18 @@
       availabilityDate.value = today;
       availabilityDate.min = today;
 
-      reservationStartHour.innerHTML = '';
-      for (let h = 0; h <= 23; h += 1) {
-        const option = document.createElement('option');
-        option.value = String(h);
-        option.textContent = `${pad2(h)}:00`;
-        if (h === 10) option.selected = true;
-        reservationStartHour.appendChild(option);
-      }
+      fillHourSelect(reservationStartHour, 10);
       buildHoursOptions();
+      adminFilterDate.value = today;
+      adminFilterDate.min = '';
+      adminEditDate.value = today;
+      adminEditDate.min = today;
+      adminOverwriteDate.value = today;
+      adminOverwriteDate.min = today;
+      fillHourSelect(adminEditStartHour, 10);
+      fillHourSelect(adminOverwriteStartHour, 10);
+      fillHoursSelect(adminEditHours, 1);
+      fillHoursSelect(adminOverwriteHours, 1);
     }
 
     function buildHoursOptions() {
@@ -685,7 +820,9 @@
         heroLoginStatus.style.color = 'var(--success)';
         setBox(debugMessage, '認証状態：ログイン中です。', 'success');
         setBox(reservationMessage, '予約登録できます。会議室と時間を選択してください。', 'info');
+        updateAdminVisibility();
         subscribeMyReservations();
+        subscribeAdminReservations();
       } else {
         guestPanel.style.display = 'block';
         userPanel.style.display = 'none';
@@ -696,8 +833,13 @@
         heroLoginStatus.style.color = 'var(--warning)';
         setBox(debugMessage, '認証状態：未ログインです。', 'info');
         setBox(reservationMessage, '予約するには、先に会員登録またはログインしてください。', 'info');
+        updateAdminVisibility();
         if (unsubscribeMyReservations) unsubscribeMyReservations();
+        if (unsubscribeAdminReservations) unsubscribeAdminReservations();
+        adminReservations = [];
+        selectedAdminReservation = null;
         myReservationsList.innerHTML = '<div class="empty-state">ログイン後に予約一覧を表示します。</div>';
+        adminReservationsList.innerHTML = '<div class="empty-state">管理者ログイン後に予約一覧を表示します。</div>';
       }
     });
 
@@ -755,12 +897,27 @@
 
     function renderRoomOptions() {
       const before = reservationRoom.value;
+      const adminFilterBefore = adminFilterRoom.value;
+      const adminEditBefore = adminEditRoom.value;
+      const adminOverwriteBefore = adminOverwriteRoom.value;
       if (!rooms.length) {
         reservationRoom.innerHTML = '<option value="">会議室マスタが未登録です</option>';
+        adminFilterRoom.innerHTML = '<option value="all">すべて</option>';
+        adminEditRoom.innerHTML = '<option value="">会議室マスタが未登録です</option>';
+        adminOverwriteRoom.innerHTML = '<option value="">会議室マスタが未登録です</option>';
         return;
       }
-      reservationRoom.innerHTML = rooms.map((room) => `<option value="${room.id}">${room.name}：${yen(room.pricePerHour)}/時間</option>`).join('');
+      const roomOptions = rooms.map((room) => `<option value="${room.id}">${room.name}：${yen(room.pricePerHour)}/時間</option>`).join('');
+      reservationRoom.innerHTML = roomOptions;
+      adminFilterRoom.innerHTML = '<option value="all">すべて</option>' + rooms.map((room) => `<option value="${room.id}">${room.name}</option>`).join('');
+      adminEditRoom.innerHTML = roomOptions;
+      adminOverwriteRoom.innerHTML = roomOptions;
       if (before && roomMap.has(before)) reservationRoom.value = before;
+      if (adminFilterBefore && (adminFilterBefore === 'all' || roomMap.has(adminFilterBefore))) adminFilterRoom.value = adminFilterBefore;
+      if (adminEditBefore && roomMap.has(adminEditBefore)) adminEditRoom.value = adminEditBefore;
+      if (adminOverwriteBefore && roomMap.has(adminOverwriteBefore)) adminOverwriteRoom.value = adminOverwriteBefore;
+      updateAdminEditPreview();
+      updateAdminOverwritePreview();
     }
 
     function renderSlotGrid() {
@@ -1083,6 +1240,402 @@
       subscribeAvailabilitySlots();
     });
 
+
+
+    function updateAdminVisibility() {
+      const admin = isCurrentUserAdmin();
+      adminGate.style.display = admin ? 'none' : 'block';
+      adminPanel.style.display = admin ? 'grid' : 'none';
+      if (!admin) {
+        setBox(adminReservationsMessage, '管理者としてログインすると予約一覧を表示します。', 'info');
+        setBox(adminEditMessage, '管理者としてログインしてください。', 'info');
+        setBox(adminOverwriteMessage, '管理者としてログインしてください。', 'info');
+      }
+    }
+
+    function getAdminDraft(roomSelect, dateInput, hourSelect, hoursSelect) {
+      const room = roomMap.get(roomSelect.value);
+      const date = dateInput.value;
+      const startHour = Number(hourSelect.value);
+      const hours = Number(hoursSelect.value);
+      if (!room || !date || Number.isNaN(startHour) || Number.isNaN(hours)) return null;
+      const startDate = createLocalDate(date, startHour);
+      const endDate = addHours(startDate, hours);
+      const amount = room.pricePerHour * hours;
+      const slots = [];
+      for (let i = 0; i < hours; i += 1) {
+        const slotDateObj = addHours(startDate, i);
+        const slotDate = formatDateLocal(slotDateObj);
+        const slotHour = slotDateObj.getHours();
+        slots.push({
+          id: buildSlotId(room.id, slotDate, slotHour),
+          slotGroup: buildSlotGroup(room.id, slotDate),
+          roomId: room.id,
+          date: slotDate,
+          hour: slotHour
+        });
+      }
+      return { room, date, startHour, hours, startDate, endDate, amount, slots };
+    }
+
+    function updateAdminEditPreview() {
+      const draft = getAdminDraft(adminEditRoom, adminEditDate, adminEditStartHour, adminEditHours);
+      adminEditAmount.textContent = yen(draft?.amount || 0);
+    }
+
+    function updateAdminOverwritePreview() {
+      const draft = getAdminDraft(adminOverwriteRoom, adminOverwriteDate, adminOverwriteStartHour, adminOverwriteHours);
+      adminOverwriteAmount.textContent = yen(draft?.amount || 0);
+    }
+
+    function statusText(status) {
+      const labels = {
+        reserved: '予約中',
+        cancelled: 'キャンセル済み',
+        cancelled_by_admin: '管理者キャンセル',
+        overwritten: '上書き済み'
+      };
+      return labels[status] || status || '不明';
+    }
+
+    function activeAdminReservations() {
+      const date = adminFilterDate.value;
+      const roomId = adminFilterRoom.value;
+      const status = adminFilterStatus.value;
+      const keyword = adminFilterKeyword.value.trim().toLowerCase();
+      return adminReservations.filter((reservation) => {
+        if (date && reservation.startDate !== date) return false;
+        if (roomId && roomId !== 'all' && reservation.roomId !== roomId) return false;
+        if (status && status !== 'all' && reservation.status !== status) return false;
+        if (keyword) {
+          const target = `${reservation.id} ${reservation.userEmail || ''} ${reservation.userId || ''}`.toLowerCase();
+          if (!target.includes(keyword)) return false;
+        }
+        return true;
+      });
+    }
+
+    function subscribeAdminReservations() {
+      if (unsubscribeAdminReservations) {
+        unsubscribeAdminReservations();
+        unsubscribeAdminReservations = null;
+      }
+      if (!isCurrentUserAdmin()) return;
+      setBox(adminReservationsMessage, '全予約を読み込み中です...', 'info');
+      unsubscribeAdminReservations = onSnapshot(collection(db, 'reservations'), (snapshot) => {
+        adminReservations = snapshot.docs.map((docSnap) => ({ id: docSnap.id, ...docSnap.data() }))
+          .sort((a, b) => (b.createdAt?.seconds || 0) - (a.createdAt?.seconds || 0));
+        renderAdminReservations();
+      }, (error) => {
+        setBox(adminReservationsMessage, getFirestoreErrorMessage(error), 'error');
+      });
+    }
+
+    function renderAdminReservations() {
+      if (!isCurrentUserAdmin()) return;
+      const list = activeAdminReservations();
+      setBox(adminReservationsMessage, `条件に一致する予約を${list.length}件表示しています。`, 'success');
+      if (!list.length) {
+        adminReservationsList.innerHTML = '<div class="empty-state">条件に一致する予約はありません。</div>';
+        return;
+      }
+      adminReservationsList.innerHTML = list.map((reservation) => {
+        const start = reservation.startAt?.toDate ? formatDateTimeLocal(reservation.startAt.toDate()) : `${reservation.startDate || ''} ${pad2(reservation.startHour || 0)}:00`;
+        const end = reservation.endAt?.toDate ? formatDateTimeLocal(reservation.endAt.toDate()) : reservation.endDate || '';
+        const selected = selectedAdminReservation?.id === reservation.id;
+        const isActive = reservation.status === 'reserved';
+        return `
+          <div class="admin-reservation-card ${selected ? 'is-selected' : ''}">
+            <strong>${reservation.roomName || reservation.roomId} <span class="pill ${isActive ? 'success' : 'warn'}">${statusText(reservation.status)}</span></strong>
+            <small>${start} 〜 ${end} / ${reservation.hours}時間 / ${yen(reservation.amount)}</small>
+            <small>予約番号: ${reservation.id}</small>
+            <small>ユーザー: ${reservation.userEmail || reservation.userId || '-'}</small>
+            <div class="admin-action-row">
+              <button class="btn secondary small" type="button" data-admin-select="${reservation.id}">この予約を選択</button>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function selectAdminReservation(reservationId) {
+      selectedAdminReservation = adminReservations.find((reservation) => reservation.id === reservationId) || null;
+      if (!selectedAdminReservation) {
+        adminSelectedReservationLabel.textContent = '未選択';
+        setBox(adminEditMessage, '予約が見つかりません。', 'error');
+        return;
+      }
+      const reservation = selectedAdminReservation;
+      adminSelectedReservationLabel.textContent = reservation.id;
+      if (roomMap.has(reservation.roomId)) adminEditRoom.value = reservation.roomId;
+      adminEditDate.value = reservation.startDate || getTodayString();
+      adminEditStartHour.value = String(reservation.startHour || 0);
+      adminEditHours.value = String(reservation.hours || 1);
+      adminEditReason.value = '';
+      updateAdminEditPreview();
+      renderAdminReservations();
+      setBox(adminEditMessage, `${reservation.roomName} の予約を選択しました。`, 'success');
+      location.hash = '#admin';
+    }
+
+    async function getSlotDocsByReservationId(reservationId) {
+      const slotQuery = query(collection(db, 'room_slots'), where('reservationId', '==', reservationId));
+      const snapshot = await getDocs(slotQuery);
+      return snapshot.docs;
+    }
+
+    async function writeAdminLog(action, targetReservationId, reason, details = {}) {
+      const logId = `log_${crypto.randomUUID()}`;
+      await setDoc(doc(db, 'admin_logs', logId), {
+        action,
+        targetReservationId,
+        reason: reason || '',
+        details,
+        adminUserId: currentUser.uid,
+        adminEmail: currentUser.email || '',
+        createdAt: serverTimestamp()
+      });
+    }
+
+    adminReservationsList.addEventListener('click', (event) => {
+      const button = event.target.closest('[data-admin-select]');
+      if (!button) return;
+      selectAdminReservation(button.dataset.adminSelect);
+    });
+
+    [adminFilterDate, adminFilterRoom, adminFilterStatus, adminFilterKeyword].forEach((el) => {
+      el.addEventListener('input', renderAdminReservations);
+      el.addEventListener('change', renderAdminReservations);
+    });
+
+    [adminEditRoom, adminEditDate, adminEditStartHour, adminEditHours].forEach((el) => {
+      el.addEventListener('change', updateAdminEditPreview);
+    });
+
+    [adminOverwriteRoom, adminOverwriteDate, adminOverwriteStartHour, adminOverwriteHours].forEach((el) => {
+      el.addEventListener('change', updateAdminOverwritePreview);
+    });
+
+    reloadAdminReservationsBtn.addEventListener('click', subscribeAdminReservations);
+
+    adminUpdateReservationBtn.addEventListener('click', async () => {
+      if (!isCurrentUserAdmin()) {
+        setBox(adminEditMessage, '管理者権限がありません。', 'error');
+        return;
+      }
+      if (!selectedAdminReservation) {
+        setBox(adminEditMessage, '変更対象の予約を選択してください。', 'error');
+        return;
+      }
+      if (selectedAdminReservation.status !== 'reserved') {
+        setBox(adminEditMessage, '予約中以外の予約は変更できません。', 'error');
+        return;
+      }
+      const draft = getAdminDraft(adminEditRoom, adminEditDate, adminEditStartHour, adminEditHours);
+      if (!draft) {
+        setBox(adminEditMessage, '変更後の会議室と時間を選択してください。', 'error');
+        return;
+      }
+      if (draft.startDate < new Date()) {
+        setBox(adminEditMessage, '過去日時には変更できません。', 'error');
+        return;
+      }
+      const reason = adminEditReason.value.trim() || '管理者による予約変更';
+      const oldSlotDocs = await getSlotDocsByReservationId(selectedAdminReservation.id);
+      try {
+        adminUpdateReservationBtn.disabled = true;
+        setBox(adminEditMessage, '予約を変更中です...', 'info');
+        await runTransaction(db, async (transaction) => {
+          const reservationRef = doc(db, 'reservations', selectedAdminReservation.id);
+          const reservationSnap = await transaction.get(reservationRef);
+          if (!reservationSnap.exists()) throw new Error('予約が見つかりません。');
+          const current = reservationSnap.data();
+          if (current.status !== 'reserved') throw new Error('予約中以外の予約は変更できません。');
+          const slotRefs = draft.slots.map((slot) => ({ slot, ref: doc(db, 'room_slots', slot.id) }));
+          for (const item of slotRefs) {
+            const snap = await transaction.get(item.ref);
+            if (snap.exists() && snap.data().reservationId !== selectedAdminReservation.id) {
+              throw new Error(`${item.slot.date} ${pad2(item.slot.hour)}:00 はすでに予約済みです。`);
+            }
+          }
+          oldSlotDocs.forEach((slotDoc) => transaction.delete(slotDoc.ref));
+          transaction.update(reservationRef, {
+            roomId: draft.room.id,
+            roomName: draft.room.name,
+            roomType: draft.room.type,
+            roomTypeLabel: draft.room.typeLabel,
+            pricePerHour: draft.room.pricePerHour,
+            startAt: Timestamp.fromDate(draft.startDate),
+            endAt: Timestamp.fromDate(draft.endDate),
+            startDate: formatDateLocal(draft.startDate),
+            endDate: formatDateLocal(draft.endDate),
+            startHour: draft.startDate.getHours(),
+            hours: draft.hours,
+            amount: draft.amount,
+            updatedAt: serverTimestamp(),
+            updatedBy: currentUser.uid,
+            adminChangeReason: reason
+          });
+          for (const item of slotRefs) {
+            transaction.set(item.ref, {
+              slotGroup: item.slot.slotGroup,
+              roomId: item.slot.roomId,
+              date: item.slot.date,
+              hour: item.slot.hour,
+              reservationId: selectedAdminReservation.id,
+              status: 'reserved',
+              updatedAt: serverTimestamp(),
+              updatedBy: currentUser.uid
+            });
+          }
+        });
+        await writeAdminLog('update', selectedAdminReservation.id, reason, { roomId: draft.room.id, startDate: draft.date, startHour: draft.startHour, hours: draft.hours });
+        setBox(adminEditMessage, '予約を変更しました。', 'success');
+      } catch (error) {
+        const message = error?.message && !error.code ? error.message : getFirestoreErrorMessage(error);
+        setBox(adminEditMessage, message, 'error');
+      } finally {
+        adminUpdateReservationBtn.disabled = false;
+      }
+    });
+
+    adminCancelReservationBtn.addEventListener('click', async () => {
+      if (!isCurrentUserAdmin()) {
+        setBox(adminEditMessage, '管理者権限がありません。', 'error');
+        return;
+      }
+      if (!selectedAdminReservation) {
+        setBox(adminEditMessage, 'キャンセル対象の予約を選択してください。', 'error');
+        return;
+      }
+      const reason = adminEditReason.value.trim() || '管理者による予約キャンセル';
+      const ok = confirm('この予約を管理者権限でキャンセルしますか？');
+      if (!ok) return;
+      const oldSlotDocs = await getSlotDocsByReservationId(selectedAdminReservation.id);
+      try {
+        adminCancelReservationBtn.disabled = true;
+        setBox(adminEditMessage, '予約をキャンセル中です...', 'info');
+        await runTransaction(db, async (transaction) => {
+          const reservationRef = doc(db, 'reservations', selectedAdminReservation.id);
+          const reservationSnap = await transaction.get(reservationRef);
+          if (!reservationSnap.exists()) throw new Error('予約が見つかりません。');
+          transaction.update(reservationRef, {
+            status: 'cancelled_by_admin',
+            updatedAt: serverTimestamp(),
+            cancelledAt: serverTimestamp(),
+            cancelledBy: currentUser.uid,
+            adminCancelReason: reason
+          });
+          oldSlotDocs.forEach((slotDoc) => transaction.delete(slotDoc.ref));
+        });
+        await writeAdminLog('cancel', selectedAdminReservation.id, reason);
+        setBox(adminEditMessage, '予約を管理者権限でキャンセルしました。', 'success');
+      } catch (error) {
+        const message = error?.message && !error.code ? error.message : getFirestoreErrorMessage(error);
+        setBox(adminEditMessage, message, 'error');
+      } finally {
+        adminCancelReservationBtn.disabled = false;
+      }
+    });
+
+    adminOverwriteReservationBtn.addEventListener('click', async () => {
+      if (!isCurrentUserAdmin()) {
+        setBox(adminOverwriteMessage, '管理者権限がありません。', 'error');
+        return;
+      }
+      const draft = getAdminDraft(adminOverwriteRoom, adminOverwriteDate, adminOverwriteStartHour, adminOverwriteHours);
+      if (!draft) {
+        setBox(adminOverwriteMessage, '会議室と時間を選択してください。', 'error');
+        return;
+      }
+      if (draft.startDate < new Date()) {
+        setBox(adminOverwriteMessage, '過去日時には上書き予約できません。', 'error');
+        return;
+      }
+      const reason = adminOverwriteReason.value.trim();
+      if (!reason) {
+        setBox(adminOverwriteMessage, '上書き理由を入力してください。', 'error');
+        return;
+      }
+      const ok = confirm('既存予約がある場合は上書き済みに変更します。実行しますか？');
+      if (!ok) return;
+
+      const targetSlotRefs = draft.slots.map((slot) => ({ slot, ref: doc(db, 'room_slots', slot.id) }));
+      const targetSnaps = await Promise.all(targetSlotRefs.map((item) => getDoc(item.ref)));
+      const conflictReservationIds = [...new Set(targetSnaps.filter((snap) => snap.exists()).map((snap) => snap.data().reservationId))];
+      const conflictSlotDocs = [];
+      for (const reservationId of conflictReservationIds) {
+        const docs = await getSlotDocsByReservationId(reservationId);
+        conflictSlotDocs.push(...docs);
+      }
+
+      const reservationId = `admin_${crypto.randomUUID()}`;
+      const reservationRef = doc(db, 'reservations', reservationId);
+      try {
+        adminOverwriteReservationBtn.disabled = true;
+        setBox(adminOverwriteMessage, '緊急上書き予約を作成中です...', 'info');
+        await runTransaction(db, async (transaction) => {
+          const checkedSnaps = [];
+          for (const item of targetSlotRefs) {
+            checkedSnaps.push(await transaction.get(item.ref));
+          }
+          const checkedConflictIds = [...new Set(checkedSnaps.filter((snap) => snap.exists()).map((snap) => snap.data().reservationId))];
+          checkedConflictIds.forEach((conflictId) => {
+            const conflictRef = doc(db, 'reservations', conflictId);
+            transaction.update(conflictRef, {
+              status: 'overwritten',
+              updatedAt: serverTimestamp(),
+              overwrittenAt: serverTimestamp(),
+              overwrittenBy: currentUser.uid,
+              overwrittenReason: reason,
+              overwrittenByReservationId: reservationId
+            });
+          });
+          conflictSlotDocs.forEach((slotDoc) => transaction.delete(slotDoc.ref));
+          transaction.set(reservationRef, {
+            userId: currentUser.uid,
+            userEmail: currentUser.email || '',
+            roomId: draft.room.id,
+            roomName: draft.room.name,
+            roomType: draft.room.type,
+            roomTypeLabel: draft.room.typeLabel,
+            pricePerHour: draft.room.pricePerHour,
+            startAt: Timestamp.fromDate(draft.startDate),
+            endAt: Timestamp.fromDate(draft.endDate),
+            startDate: formatDateLocal(draft.startDate),
+            endDate: formatDateLocal(draft.endDate),
+            startHour: draft.startDate.getHours(),
+            hours: draft.hours,
+            amount: draft.amount,
+            status: 'reserved',
+            adminOverride: true,
+            overrideReason: reason,
+            createdAt: serverTimestamp(),
+            updatedAt: serverTimestamp(),
+            createdBy: currentUser.uid
+          });
+          for (const item of targetSlotRefs) {
+            transaction.set(item.ref, {
+              slotGroup: item.slot.slotGroup,
+              roomId: item.slot.roomId,
+              date: item.slot.date,
+              hour: item.slot.hour,
+              reservationId,
+              status: 'reserved',
+              createdAt: serverTimestamp(),
+              createdBy: currentUser.uid
+            });
+          }
+        });
+        await writeAdminLog('overwrite', reservationId, reason, { overwrittenReservationIds: conflictReservationIds, roomId: draft.room.id, startDate: draft.date, startHour: draft.startHour, hours: draft.hours });
+        setBox(adminOverwriteMessage, `緊急上書き予約を作成しました。上書き対象：${conflictReservationIds.length}件`, 'success');
+      } catch (error) {
+        const message = error?.message && !error.code ? error.message : getFirestoreErrorMessage(error);
+        setBox(adminOverwriteMessage, message, 'error');
+      } finally {
+        adminOverwriteReservationBtn.disabled = false;
+      }
+    });
     setDefaultInputs();
     subscribeRooms();
     updateReservationPreview();

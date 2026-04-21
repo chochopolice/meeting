@@ -1,54 +1,43 @@
 # レンタル会議室予約システム
 
-GitHub Pages + Firebase Authentication + Cloud Firestoreで構築するレンタル会議室予約システムです。
+GitHub Pages + Firebase Authentication + Cloud Firestore で動作するレンタル会議室予約サイトです。
 
-## 構成
+## 今回の内容
 
-- `index.html`: サイト本体
-- `firestore.rules`: Firestore Security Rules
-- `.nojekyll`: GitHub Pages用
-
-## 今回の実装範囲
-
-- 会員登録・ログイン・ログアウト
-- 管理者設定用UID表示
-- Firestore会議室マスタ25件登録
-- 会議室一覧のリアルタイム表示
+- 会員登録・ログイン
+- 会議室マスタ登録
 - 予約登録
-- 最大24時間制限
-- 料金自動計算
-- `room_slots` による二重予約防止
-- 選択日の空き状況表示
+- room_slots による二重予約防止
 - 全会議室の空き状況カレンダー
-- 会議室種別フィルター
-- 空き枠クリックで予約フォームへ反映
-- 自分の予約一覧表示
-- 予約キャンセルと時間枠解除
+- 自分の予約一覧・キャンセル
+- 管理者画面
+  - 全予約一覧
+  - 予約変更
+  - 管理者キャンセル
+  - 緊急上書き予約
+  - 操作ログ登録
+- 通常ユーザー画面から Firestore 会議室マスタ表示を非表示化
+- 大会議室カードの pill 表示を拡大
 
 ## 反映方法
 
-リポジトリ直下へ以下をアップロードしてください。
+GitHubリポジトリ直下に以下を上書きしてください。
 
 - index.html
+- firestore.rules
 - README.md
 - .nojekyll
-- firestore.rules
 
-GitHub Pages反映後、ブラウザで `Ctrl + F5` を押して強制更新してください。
+その後、Firebase Console の Firestore Database > ルール に `firestore.rules` の内容を貼り付けて公開してください。
 
-## Firestore Rulesの注意
+## 管理者UID
 
-今回の `firestore.rules` には、管理者UIDとして以下を設定済みです。
+現在の管理者UID:
 
 ```text
 vgW29wAqLeTATkfgq6iGj0agpBT2
 ```
 
-Firebase Console の Firestore Database → ルール に貼り付けて公開してください。
+## 注意
 
-## コレクション
-
-- `rooms`: 会議室マスタ
-- `reservations`: 予約本体
-- `room_slots`: 二重予約防止用の時間枠ロック
-- `admin_logs`: 次工程以降の管理者操作ログ用
+管理者画面は、上記UIDのユーザーでログインした場合だけ表示されます。
