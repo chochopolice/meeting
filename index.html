@@ -4,7 +4,7 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>レンタル会議室予約システム</title>
-  <meta name="description" content="GitHub Pages + Firebaseで作るレンタル会議室予約システム" />
+  <meta name="description" content="レンタル会議室予約システム" />
   <style>
     :root {
       --bg: #f6f8fb;
@@ -244,7 +244,7 @@
         <div>
           <div class="badge">24時間365日いつでも予約可能</div>
           <h1>会議室予約を、もっとシンプルに。</h1>
-          <p class="lead">大・中・小あわせて25室のレンタル会議室を、会員登録後にオンラインで予約できます。Firestoreのroom_slotsで時間枠をロックし、二重予約を防ぎます。</p>
+          <p class="lead">大・中・小あわせて25室のレンタル会議室を、会員登録後にオンラインで予約できます。</p>
           <div class="hero-actions">
             <a class="btn" href="#auth">会員登録・ログイン</a>
             <a class="btn secondary" href="#calendar">予約する</a>
@@ -426,7 +426,7 @@
         <div id="adminPanel" class="admin-panel admin-layout">
           <div class="master-panel">
             <div class="master-head">
-              <div><h3>会議室マスタ管理</h3><p>Firestoreの <strong>rooms</strong> コレクションに25室分の会議室マスタを登録・更新します。</p></div>
+              <div><h3>会議室マスタ管理</h3><p><strong>rooms</strong> コレクションに25室分の会議室マスタを登録・更新します。</p></div>
               <button class="btn" id="seedRoomsBtn" type="button">会議室マスタを登録/更新</button>
             </div>
             <div id="roomsMessage" class="status-box info">会議室マスタを読み込み中です。</div>
@@ -911,8 +911,8 @@
         'auth/user-not-found': 'ユーザーが見つかりません。先に会員登録してください。',
         'auth/wrong-password': 'パスワードが正しくありません。',
         'auth/too-many-requests': 'ログイン試行が多すぎます。少し時間をおいて再度お試しください。',
-        'auth/operation-not-allowed': 'Firebase Consoleでメール/パスワード認証が有効になっていません。',
-        'auth/unauthorized-domain': 'このドメインがFirebase Authenticationの承認済みドメインに登録されていません。'
+        'auth/operation-not-allowed': 'メール/パスワード認証が有効になっていません。',
+        'auth/unauthorized-domain': 'このドメインが承認済みドメインに登録されていません。'
       };
       return messages[code] || `エラーが発生しました：${error.message || code}`;
     }
