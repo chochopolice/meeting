@@ -177,7 +177,6 @@
     }
     article:first-child .pill { font-size: 16px; padding: 8px 14px; }
     .admin-panel { display: none; }
-    .front-hidden { display: none !important; }
     .admin-layout { display: grid; grid-template-columns: 1fr; gap: 18px; }
     .admin-controls { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; align-items: end; }
     .admin-controls .field { margin: 0; }
@@ -217,14 +216,13 @@
 <body>
   <header>
     <div class="container nav">
-      <a class="logo" href="#top"><span class="logo-mark">会</span><span>レンタル会議室予約</span></a>
+      <a class="logo" href="#top"><span class="logo-mark">会</span><span>レンタル会議室予約 管理者ページ</span></a>
       <nav class="nav-links" aria-label="メインメニュー">
-        <a href="#auth">ログイン</a>
-        <a href="#rooms">会議室</a>
-        <a href="#calendar">予約</a>
+        <a href="#auth">管理者ログイン</a>
+        <a href="#admin">管理画面</a>
         <a href="#availability">空き状況</a>
-        <a href="#myreservations">予約履歴</a>
-        <a class="btn" href="#calendar">予約する</a>
+        <a href="#myreservations">予約確認</a>
+        <a class="btn" href="./index.html">ユーザー画面へ</a>
       </nav>
     </div>
   </header>
@@ -233,12 +231,12 @@
     <section class="hero">
       <div class="container hero-grid">
         <div>
-          <div class="badge">24時間365日いつでも予約可能</div>
-          <h1>会議室予約を、もっとシンプルに。</h1>
-          <p class="lead">大・中・小あわせて25室のレンタル会議室を、会員登録後にオンラインで予約できます。Firestoreのroom_slotsで時間枠をロックし、二重予約を防ぎます。</p>
+          <div class="badge">管理者専用ページ</div>
+          <h1>レンタル会議室 管理コンソール</h1>
+          <p class="lead">予約一覧確認、予約変更・キャンセル、緊急上書き、会議室マスタ更新、操作ログ確認を行う管理者専用ページです。</p>
           <div class="hero-actions">
-            <a class="btn" href="#auth">会員登録・ログイン</a>
-            <a class="btn secondary" href="#calendar">予約する</a>
+            <a class="btn" href="#auth">管理者ログイン</a>
+            <a class="btn secondary" href="#admin">管理画面を開く</a>
           </div>
         </div>
         <aside class="hero-card">
@@ -272,7 +270,7 @@
           </div>
           <div class="auth-card">
             <h3>ログイン状態</h3>
-            <p>ログインに成功すると、ここにユーザー情報が表示されます。</p>
+            <p>ログインに成功すると、ここにユーザー情報と管理者設定に使うUIDが表示されます。</p>
             <div class="status-box" id="guestPanel">現在は未ログインです。予約するにはログインしてください。</div>
             <div class="user-panel" id="userPanel">
               <div>
@@ -282,7 +280,7 @@
               </div>
               <button class="btn danger" id="logoutBtn" type="button">ログアウト</button>
             </div>
-            <div class="uid-box front-hidden">
+            <div class="uid-box">
               <strong>管理者設定用UID</strong>
               <span class="uid-text" id="adminUidText">未ログインのため未取得です</span>
               <div class="mini-actions">
@@ -417,7 +415,7 @@
       </div>
     </section>
 
-    <section id="admin" class="front-hidden" aria-hidden="true">
+    <section id="admin">
       <div class="container">
         <div class="section-title"><h2>管理者画面</h2><p>管理者は予約一覧の確認、予約変更、キャンセル、緊急上書き、会議室マスタ登録を行えます。</p></div>
 
@@ -524,14 +522,25 @@
   </main>
 
   <nav class="mobile-bottom-nav" aria-label="スマホ用メニュー">
-    <a href="#calendar" class="primary">予約</a>
+    <a href="#admin" class="primary">管理</a>
     <a href="#availability">空き状況</a>
-    <a href="#myreservations">マイ予約</a>
-      </nav>
+    <a href="#myreservations">予約</a>
+    <a href="./index.html">ユーザー</a>
+  </nav>
 
   <footer>
     <div class="container">© Rental Meeting Room Reservation System / GitHub Pages + Firebase</div>
   </footer>
+
+
+  <script>
+    window.addEventListener('load', () => {
+      if (!location.hash || location.hash === '#top') {
+        const target = document.getElementById('admin');
+        if (target) target.scrollIntoView({ behavior: 'auto', block: 'start' });
+      }
+    });
+  </script>
 
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/12.12.0/firebase-app.js";
