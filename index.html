@@ -269,11 +269,10 @@
               <button class="btn" id="registerBtn" type="button">会員登録</button>
               <button class="btn secondary" id="loginBtn" type="button">ログイン</button>
             </div>
-            <div id="authMessage" class="status-box info">Firebase接続準備完了。会員登録またはログインを試してください。</div>
+            <div id="authMessage" class="status-box info">会員登録またはログインを試してください。</div>
           </div>
           <div class="auth-card">
             <h3>ログイン状態</h3>
-            <p>ログインに成功すると、ここにユーザー情報が表示されます。</p>
             <div class="status-box" id="guestPanel">現在は未ログインです。予約するにはログインしてください。</div>
             <div class="user-panel" id="userPanel">
               <div>
@@ -336,17 +335,17 @@
                 <label class="payment-option">
                   <input type="radio" name="paymentMethod" value="onsite" checked />
                   <strong>現地決済</strong>
-                  <span>受付時に現金・店頭決済で支払います。現在の無料構成で利用できます。</span>
+                  <span>受付時に現金・店頭決済で支払います。</span>
                 </label>
                 <label class="payment-option">
                   <input type="radio" name="paymentMethod" value="credit" />
                   <strong>クレジットカード</strong>
-                  <span>Stripe等の外部決済連携後に利用します。カード番号はこの画面では入力しません。</span>
+                  <span>Stripe決済へ連携します。</span>
                 </label>
                 <label class="payment-option">
                   <input type="radio" name="paymentMethod" value="paypay" />
                   <strong>PayPay</strong>
-                  <span>StripeまたはPayPay API連携後に利用します。決済画面へ遷移する方式を想定します。</span>
+                  <span>Stripe決済へ連携します。</span>
                 </label>
               </div>
               <div id="paymentNotice" class="status-box info">現地決済、クレジットカード、PayPayを選択できます。オンライン決済はStripe Checkoutへ移動します。</div>
@@ -531,7 +530,7 @@
       </nav>
 
   <footer>
-    <div class="container">© Rental Meeting Room Reservation System / GitHub Pages + Firebase</div>
+    <div class="container">© 2026 Toshiyuki Oosawa — 無断複製・商用利用禁止</div>
   </footer>
 
   <script type="module">
